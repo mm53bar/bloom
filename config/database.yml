@@ -26,19 +26,23 @@ test:
 #
 # Similarly, if you deploy your application as a Docker container, you must
 # ensure the database is located in a persisted volume.
+# `storage/` is the mounted volume in the container image, so all four
+# databases land on persistent disk. Rails generates these paths commented out;
+# leaving them that way makes `db:prepare` fail at boot with "No database file
+# specified", which is only ever seen in production.
 production:
   primary:
     <<: *default
-    # database: path/to/persistent/storage/production.sqlite3
+    database: storage/production.sqlite3
   cache:
     <<: *default
-    # database: path/to/persistent/storage/production_cache.sqlite3
+    database: storage/production_cache.sqlite3
     migrations_paths: db/cache_migrate
   queue:
     <<: *default
-    # database: path/to/persistent/storage/production_queue.sqlite3
+    database: storage/production_queue.sqlite3
     migrations_paths: db/queue_migrate
   cable:
     <<: *default
-    # database: path/to/persistent/storage/production_cable.sqlite3
+    database: storage/production_cable.sqlite3
     migrations_paths: db/cable_migrate

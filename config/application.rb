@@ -16,6 +16,12 @@ module Bloom
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
 
+    # Bloom attaches no files, so the `image_processing` gem was dropped from the
+    # Gemfile and libvips from the image. Active Storage still comes in via
+    # `rails/all` and warns on every boot that variants need a processor it can't
+    # find — disabling it says out loud that no variants are wanted.
+    config.active_storage.variant_processor = :disabled
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

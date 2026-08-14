@@ -45,10 +45,13 @@ round the house with one. This file is standing rules, not a spec — read the c
   `docs/adr/20260814-integration-tests-over-system-tests.md`.
 - Time-dependent behaviour (growing season, reading freshness, cadence) is tested with
   `travel_to`, never against the real clock. A test that passes only in August is not a test.
-- **Test-environment defaults can hide production failures.** Forgery protection is off in
-  test, which once let a completely broken JSON API pass every API test. When a test asserts
-  the absence of a protection, switch that protection on inside the test and assert both
-  halves — see the CSRF test in `test/integration/api_test.rb`.
+- **Test-environment defaults can hide production failures.** Three real bugs have now
+  reached a running server with the suite fully green: a JSON API that rejected every caller
+  (forgery protection is off in test), production database paths left commented out by the
+  generator, and a boot warning for a deliberately removed gem. `bin/ci` runs
+  `script/production-boot-check` for exactly this reason. When a test asserts the *absence* of
+  a protection, switch that protection on inside the test and assert both halves — see the CSRF
+  test in `test/integration/api_test.rb`.
 - Run `bin/ci` before considering work complete — the full gate (rubocop, bundler-audit,
   importmap audit, brakeman, tests, seeds), not just `bin/rails test`. If it fails, fix or
   surface it; do not declare work done.

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Boot the app the way the container does, and fail loudly if it can't.
+#
+# This exists because two bugs reached a running server while the whole test
+# suite stayed green: production's database paths were left commented out by the
+# Rails generator (`db:prepare` died with "No database file specified"), and
+# Active Storage warned on every boot about a variant processor that had been
+# deliberately removed. Neither is reachable from the test environment, so no
+# amount of `bin/rails test` would have caught either one.
+#
+# Deliberately narrow: prepare the databases and load the full app in the
+# production environment. Assets are precompiled during the image build, so
+# serving requests is the Dockerfile's business rather than this script's.
+
+set -euo pipefail
+
+export RAILS_ENV=production
+export SECRET_KEY_BASE=ci-only-not-a-real-secret
+export SQLITE_STORE_PATH="${TMPDIR:-/tmp}/bloom-production-boot-check"
+
+cleanup() {
+  rm -rf storage/production.sqlite3 storage/production_cache.sqlite3 \
+         storage/production_queue.sqlite3 storage/production_cable.sqlite3
+}
+trap cleanup EXIT
+
+cleanup
+bin/rails db:prepare
+
+# Loading an arbitrary model forces the full eager load that `config.eager_load`
+# does in production, so a broken initializer or autoload path fails here.
+bin/rails runner 'Pot.count; Rails.application.eager_load!; puts "production boot OK"'
