@@ -30,3 +30,15 @@ bin/rails db:prepare
 # Loading an arbitrary model forces the full eager load that `config.eager_load`
 # does in production, so a broken initializer or autoload path fails here.
 bin/rails runner 'Pot.count; Rails.application.eager_load!; puts "production boot OK"'
+
+# Machine callers reach Bloom over plain HTTP and are handed URLs to post back
+# to, so URL generation must not claim https when nothing is serving it. Both
+# settings are Rails production defaults, which is why this is worth asserting
+# rather than trusting — see the comment in config/environments/production.rb.
+bin/rails runner '
+  bad = []
+  bad << "assume_ssl" if Rails.application.config.assume_ssl
+  bad << "force_ssl"  if Rails.application.config.force_ssl
+  abort "FAIL: #{bad.join(" and ")} enabled — generated URLs will claim https" if bad.any?
+  puts "url scheme config OK"
+'

@@ -24,14 +24,27 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  config.assume_ssl = true
-
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
-
-  # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  # Both of these are deliberately OFF, which is not the Rails default.
+  #
+  # `assume_ssl` tells Rails that every request arrived over TLS regardless of
+  # what actually happened. That is right for an app always fronted by a
+  # TLS-terminating proxy, and wrong here: Bloom is reached directly over plain
+  # HTTP on the local network by machine callers, and `walk.json` hands those
+  # callers a URL to POST readings back to. With `assume_ssl` on, that URL comes
+  # out as `https://host:3214/...` — an address nothing is listening on — so the
+  # integration breaks on its first write.
+  #
+  # `force_ssl` is off for the same reason. It cannot redirect usefully when
+  # `assume_ssl` has already convinced Rails the request was secure, and turning
+  # it on without `assume_ssl` would redirect every LAN client to a port serving
+  # no TLS.
+  #
+  # None of this gives up HTTPS where it exists: a reverse proxy that terminates
+  # TLS sends `X-Forwarded-Proto: https`, which Rails honours for URL generation
+  # on its own. Turn both of these on only if Bloom is *always* behind such a
+  # proxy and never addressed directly.
+  config.assume_ssl = false
+  config.force_ssl = false
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]
