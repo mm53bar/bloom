@@ -64,11 +64,26 @@ FROM base
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
-USER 1000:1000
 
 # Copy built artifacts: gems, application
 COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --chown=rails:rails --from=build /rails /rails
+
+# Make the runtime directories world-writable, then drop privileges. A host
+# bind-mounting storage/ will own it as some other UID, and compose's `user:`
+# directive is then set to match — so Puma has to be able to create its pidfile
+# and socket dir as an arbitrary UID, not just as 1000. Without this the
+# container starts, binds its port, and then dies on
+# `Permission denied @ dir_s_mkdir - /rails/tmp/sockets`.
+#
+# The chmod runs before USER because only root can apply it. Nothing secret
+# lives in these directories; the databases in storage/ are owned by the host.
+RUN mkdir -p tmp/pids tmp/cache tmp/sockets log storage && \
+    chmod -R 0777 tmp log storage
+
+# Default to the unprivileged user baked in above. A deployment that bind-mounts
+# storage/ should override this with compose's `user:` to match the host owner.
+USER 1000:1000
 
 # The container runs as an arbitrary UID (compose `user:`), whose home dir isn't
 # writable — Bundler then warns and falls back to a /tmp temp home on every boot.
