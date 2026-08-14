@@ -1,0 +1,55 @@
+<%= form_with model: location, class: "space-y-6" do |form| %>
+  <% if location.errors.any? %>
+    <div class="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-900">
+      <p class="font-medium"><%= pluralize(location.errors.count, "problem") %> stopped this from saving:</p>
+      <ul class="mt-1 list-disc pl-5">
+        <% location.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div>
+      <%= form.label :name, class: "block text-sm font-medium text-stone-700" %>
+      <%= form.text_field :name, required: true, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :position, "Walk order", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.number_field :position, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :natural_light, class: "block text-sm font-medium text-stone-700" %>
+      <%= form.select :natural_light, Location::LIGHT_LEVELS.map { |l| [ l.humanize, l ] }, {},
+            class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :grow_light_entity_id, "Grow light entity", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.text_field :grow_light_entity_id, placeholder: "switch.example_grow_light",
+            class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+      <p class="mt-1 text-xs text-stone-500">
+        Optional. Recording one here counts this spot as a step brighter.
+      </p>
+    </div>
+
+    <div class="sm:col-span-2">
+      <%= form.label :exposure, class: "block text-sm font-medium text-stone-700" %>
+      <%= form.text_field :exposure, placeholder: "north-facing window, two metres back",
+            class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :notes, class: "block text-sm font-medium text-stone-700" %>
+    <%= form.text_area :notes, rows: 3, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= form.submit class: button_classes %>
+    <%= link_to "Cancel", location.persisted? ? location : locations_path, class: button_classes(:secondary) %>
+  </div>
+<% end %>

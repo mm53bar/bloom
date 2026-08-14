@@ -1,0 +1,89 @@
+<%= form_with model: pot, class: "space-y-6" do |form| %>
+  <% if pot.errors.any? %>
+    <div class="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-900">
+      <p class="font-medium"><%= pluralize(pot.errors.count, "problem") %> stopped this from saving:</p>
+      <ul class="mt-1 list-disc pl-5">
+        <% pot.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div>
+      <%= form.label :name, class: "block text-sm font-medium text-stone-700" %>
+      <%= form.text_field :name, required: true, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :location_id, "Location", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.collection_select :location_id, Location.in_walk_order, :id, :name, {},
+            class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div class="sm:col-span-2">
+      <%= form.label :voice_alias_list, "Also called", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.text_field :voice_alias_list, value: pot.voice_alias_list,
+            placeholder: "comma separated, for voice assistants",
+            class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :medium, "Growing medium", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.select :medium, Pot::MEDIUMS.map { |m| [ medium_label(m), m ] }, {},
+            class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+      <p class="mt-1 text-xs text-stone-500">
+        Semi-hydro waters on a refill schedule and feeds with every top-up, so its
+        probe thresholds are recorded but not used to decide watering.
+      </p>
+    </div>
+
+    <div>
+      <%= form.label :potted_on, "Potted on", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.date_field :potted_on, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :dry_below, "Dry below (%)", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.number_field :dry_below, in: 0..100, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :wet_above, "Wet above (%)", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.number_field :wet_above, in: 0..100, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :check_interval_days, "Check every (days)", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.number_field :check_interval_days, min: 1, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :water_interval_days, "Water every (days)", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.number_field :water_interval_days, min: 1, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+      <p class="mt-1 text-xs text-stone-500">Fallback when there's no recent reading. Leave blank for none.</p>
+    </div>
+
+    <div>
+      <%= form.label :fertilize_interval_days, "Feed every (days)", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.number_field :fertilize_interval_days, min: 1, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+      <p class="mt-1 text-xs text-stone-500">Paused outside the growing season. Leave blank for none.</p>
+    </div>
+
+    <div>
+      <%= form.label :position, "Walk order", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.number_field :position, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :notes, class: "block text-sm font-medium text-stone-700" %>
+    <%= form.text_area :notes, rows: 4, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= form.submit class: button_classes %>
+    <%= link_to "Cancel", pot.persisted? ? pot : pots_path, class: button_classes(:secondary) %>
+  </div>
+<% end %>

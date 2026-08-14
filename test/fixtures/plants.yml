@@ -1,0 +1,35 @@
+# Invented plants — see locations.yml.
+
+boston_fern:
+  pot: fern
+  name: Boston Fern
+  species: Nephrolepis exaltata
+  light_requirement: medium
+  acquired_on: 2026-03-01
+
+# Two plants sharing one bowl — the 1:n container case.
+jade:
+  pot: succulent_bowl
+  name: Jade
+  species: Crassula ovata
+  light_requirement: bright
+
+echeveria:
+  pot: succulent_bowl
+  name: Echeveria
+  species: Echeveria elegans
+  light_requirement: bright
+
+golden_pothos:
+  pot: pothos
+  name: Golden Pothos
+  species: Epipremnum aureum
+  light_requirement: low
+  reference_url: https://example.com/notes/pothos
+
+# Wants bright light, lives in a cellar with none.
+starved:
+  pot: orphan
+  name: Sad Succulent
+  species: Sedum morganianum
+  light_requirement: bright

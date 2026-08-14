@@ -1,0 +1,22 @@
+# Every fixture in this directory is invented. This repo is public and must not
+# carry a real household's floorplan, plant list, or device IDs — see
+# docs/adr/20260814-no-personal-data-in-this-repo.md.
+
+sunroom:
+  name: Sunroom
+  position: 1
+  natural_light: bright
+  exposure: South-facing glass on three sides
+
+landing:
+  name: Landing
+  position: 2
+  natural_light: low
+  exposure: No window of its own; borrowed light from the stairwell
+  grow_light_entity_id: switch.example_grow_light
+
+cellar:
+  name: Cellar
+  position: 3
+  natural_light: none
+  exposure: Below grade, no natural light at all

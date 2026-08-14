@@ -1,0 +1,61 @@
+<% content_for :title, "Pots" %>
+
+<div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-semibold tracking-tight text-stone-900">Pots</h1>
+    <p class="mt-1 text-sm text-stone-500">
+      <%= pluralize(@pots.size, "pot") %> in walk order.
+    </p>
+  </div>
+
+  <%= link_to "Add a pot", new_pot_path, class: button_classes %>
+</div>
+
+<% if @pots.empty? %>
+  <div class="rounded-lg border border-dashed border-stone-300 bg-white p-10 text-center">
+    <p class="text-stone-600">Nothing here yet.</p>
+    <p class="mt-1 text-sm text-stone-500">
+      Add a <%= link_to "location", new_location_path, class: "text-emerald-700 underline" %>
+      first, then the pots that sit in it.
+    </p>
+  </div>
+<% else %>
+  <% @pots.group_by(&:location).each do |location, pots| %>
+    <section class="mb-8">
+      <h2 class="mb-3 flex items-baseline gap-3 text-sm font-semibold uppercase tracking-wide text-stone-500">
+        <%= link_to location.name, location, class: "hover:text-emerald-800" %>
+        <%= light_badge location.effective_light %>
+        <% if location.grow_light? %>
+          <span class="text-xs font-normal normal-case text-stone-400">grow light</span>
+        <% end %>
+      </h2>
+
+      <ul class="divide-y divide-stone-200 overflow-hidden rounded-lg border border-stone-200 bg-white">
+        <% pots.each do |pot| %>
+          <li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
+            <div class="min-w-48 grow">
+              <%= link_to pot.name, pot, class: "font-medium text-stone-900 hover:text-emerald-800" %>
+              <p class="text-sm text-stone-500">
+                <%= pot.plants.map(&:name).to_sentence.presence || "no plants recorded" %>
+                &middot; <%= medium_label(pot.medium) %>
+              </p>
+            </div>
+
+            <div class="text-right text-sm text-stone-500">
+              <% if pot.latest_reading %>
+                <span class="font-medium text-stone-700"><%= pot.latest_reading.value.to_i %>%</span>
+                <span class="text-stone-400">&middot; <%= day_count pot.latest_reading.read_at.to_date %></span>
+              <% else %>
+                <span class="text-stone-400">no reading</span>
+              <% end %>
+            </div>
+
+            <%= status_badge pot.status %>
+
+            <%= button_to "Watered", watered_pot_path(pot), class: button_classes(:secondary) %>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+<% end %>

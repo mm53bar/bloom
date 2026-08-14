@@ -1,0 +1,2 @@
+# Readings are built inside the tests that need them — freshness is time-relative
+# and fixture dates would rot. See test/models/pot_test.rb.

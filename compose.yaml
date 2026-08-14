@@ -1,0 +1,34 @@
+# Bloom — Docker Compose template.
+#
+# Copy this into your stack, set the volume path, the `user:` UID:GID, and the
+# secret, then deploy.
+#
+# ONE container runs both the web server and background jobs: config/puma.rb boots
+# the Solid Queue supervisor in-process whenever RAILS_ENV=production, so there's
+# no separate worker service and no Redis.
+#
+# NO AUTHENTICATION. Bloom has no login system by design — it holds no per-user
+# data (docs/adr/20260814-no-auth-needed.md). It also accepts unauthenticated
+# writes, so a home automation system can post readings without carrying a token.
+# Only run it somewhere that isn't publicly reachable: a LAN-only bind, or a
+# reverse proxy that resolves internally.
+#
+# Nothing real belongs in this file — it lives in a public repository. Keep the
+# actual secret and paths in your deployed copy only.
+
+services:
+  bloom:
+    image: ghcr.io/mm53bar/bloom:latest
+    user: "1000:1000"                # UID:GID that owns the volume below
+    restart: unless-stopped
+    # `always` re-checks the registry on every `up`; use `missing` if the host has
+    # no registry auth for a private image (avoids a failed manifest check).
+    pull_policy: missing
+    volumes:
+      - /path/to/config:/rails/storage:rw   # SQLite databases — must persist
+    ports:
+      - "3214:8080"                  # host:container — the container port is fixed at 8080
+    environment:
+      TZ: UTC
+      # Rails session/cookie signing key (required). Generate with: openssl rand -hex 64
+      SECRET_KEY_BASE: replace-with-64-byte-hex

@@ -1,0 +1,147 @@
+<% content_for :title, @pot.name %>
+
+<div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+  <div>
+    <p class="text-sm text-stone-500">
+      <%= link_to @pot.location.name, @pot.location, class: "hover:text-emerald-800" %>
+    </p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-stone-900"><%= @pot.name %></h1>
+    <p class="mt-2 flex flex-wrap items-center gap-2 text-sm text-stone-500">
+      <%= status_badge @pot.status %>
+      <span><%= medium_label @pot.medium %></span>
+      <% if @pot.voice_aliases.any? %>
+        <span class="text-stone-400">also called <%= @pot.voice_alias_list %></span>
+      <% end %>
+    </p>
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <%= button_to "Watered", watered_pot_path(@pot), class: button_classes %>
+    <%= button_to "Fed", fertilized_pot_path(@pot), class: button_classes(:secondary) %>
+    <%= link_to "Edit", edit_pot_path(@pot), class: button_classes(:secondary) %>
+  </div>
+</div>
+
+<div class="grid gap-6 md:grid-cols-2">
+  <section class="rounded-lg border border-stone-200 bg-white p-5">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-stone-500">Care</h2>
+    <dl class="space-y-2 text-sm">
+      <div class="flex justify-between gap-4">
+        <dt class="text-stone-500">Last watered</dt>
+        <dd class="text-stone-800"><%= day_count @pot.last_watered_on %></dd>
+      </div>
+      <div class="flex justify-between gap-4">
+        <dt class="text-stone-500">Last fed</dt>
+        <dd class="text-stone-800"><%= day_count @pot.last_fertilized_on %></dd>
+      </div>
+      <div class="flex justify-between gap-4">
+        <dt class="text-stone-500">Check every</dt>
+        <dd class="text-stone-800"><%= pluralize @pot.check_interval_days, "day" %></dd>
+      </div>
+      <% unless @pot.semi_hydro? %>
+        <div class="flex justify-between gap-4">
+          <dt class="text-stone-500">Thresholds</dt>
+          <dd class="text-stone-800">dry below <%= @pot.dry_below %>%, wet above <%= @pot.wet_above %>%</dd>
+        </div>
+      <% end %>
+      <% if @pot.potted_on %>
+        <div class="flex justify-between gap-4">
+          <dt class="text-stone-500">Potted</dt>
+          <dd class="text-stone-800"><%= @pot.potted_on.to_fs(:long) %></dd>
+        </div>
+      <% end %>
+    </dl>
+
+    <% if @pot.semi_hydro? %>
+      <p class="mt-4 rounded border border-stone-200 bg-stone-50 p-3 text-xs text-stone-500">
+        Semi-hydro: watering follows the refill schedule rather than a probe reading,
+        and nutrients go in with every top-up instead of on a feeding interval.
+      </p>
+    <% end %>
+
+    <% if @pot.notes.present? %>
+      <p class="mt-4 whitespace-pre-line text-sm text-stone-600"><%= @pot.notes %></p>
+    <% end %>
+  </section>
+
+  <section class="rounded-lg border border-stone-200 bg-white p-5">
+    <div class="mb-3 flex items-center justify-between">
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-stone-500">Plants</h2>
+      <%= link_to "Add", new_plant_path(pot_id: @pot.id), class: "text-sm text-emerald-700 underline" %>
+    </div>
+
+    <% if @pot.plants.empty? %>
+      <p class="text-sm text-stone-400">None recorded.</p>
+    <% else %>
+      <ul class="space-y-2 text-sm">
+        <% @pot.plants.each do |plant| %>
+          <li class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <%= link_to plant.name, plant, class: "text-stone-800 hover:text-emerald-800" %>
+              <% if plant.species.present? %>
+                <span class="text-stone-400 italic"><%= plant.species %></span>
+              <% end %>
+            </div>
+            <% unless plant.light_satisfied? %>
+              <span class="rounded border border-amber-300 bg-amber-50 px-2 py-0.5 text-xs text-amber-900">
+                wants <%= plant.light_requirement %> light
+              </span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
+
+  <section class="rounded-lg border border-stone-200 bg-white p-5">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-stone-500">Readings</h2>
+
+    <%= form_with url: pot_moisture_readings_path(@pot), class: "mb-4 flex flex-wrap items-center gap-2" do |form| %>
+      <%= form.number_field :"moisture_reading[value]", name: "moisture_reading[value]",
+            in: 0..100, step: 0.1, placeholder: "reading %", required: true,
+            class: "w-32 rounded-md border border-stone-300 px-2 py-1.5 text-sm" %>
+      <%= form.submit "Record", class: button_classes %>
+    <% end %>
+
+    <% if @readings.empty? %>
+      <p class="text-sm text-stone-400">Nothing recorded yet.</p>
+    <% else %>
+      <ul class="space-y-1 text-sm">
+        <% @readings.each do |reading| %>
+          <li class="flex justify-between gap-4">
+            <span class="text-stone-800"><%= reading.value.to_i %>%</span>
+            <span class="text-stone-400">
+              <%= reading.read_at.to_fs(:short) %> &middot; <%= reading.source %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
+
+  <section class="rounded-lg border border-stone-200 bg-white p-5">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-stone-500">History</h2>
+
+    <% if @events.empty? %>
+      <p class="text-sm text-stone-400">Nothing recorded yet.</p>
+    <% else %>
+      <ul class="space-y-1 text-sm">
+        <% @events.each do |event| %>
+          <li class="flex justify-between gap-4">
+            <span class="text-stone-800"><%= event.kind.humanize %></span>
+            <span class="text-stone-400">
+              <%= event.occurred_on.to_fs(:long) %>
+              <%= "· #{event.product}" if event.product.present? %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
+</div>
+
+<div class="mt-8">
+  <%= button_to "Remove this pot", @pot, method: :delete,
+        class: button_classes(:danger),
+        form: { data: { turbo_confirm: "Remove #{@pot.name} and everything recorded about it?" } } %>
+</div>

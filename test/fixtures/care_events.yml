@@ -1,0 +1,2 @@
+# Care events are built inside the tests that need them, so their dates stay
+# relative to the moment the test runs rather than drifting as fixtures age.

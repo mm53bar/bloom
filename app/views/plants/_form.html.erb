@@ -1,0 +1,62 @@
+<%= form_with model: plant, class: "space-y-6" do |form| %>
+  <% if plant.errors.any? %>
+    <div class="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-900">
+      <p class="font-medium"><%= pluralize(plant.errors.count, "problem") %> stopped this from saving:</p>
+      <ul class="mt-1 list-disc pl-5">
+        <% plant.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div>
+      <%= form.label :name, class: "block text-sm font-medium text-stone-700" %>
+      <%= form.text_field :name, required: true, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :species, class: "block text-sm font-medium text-stone-700" %>
+      <%= form.text_field :species, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :pot_id, "Pot", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.collection_select :pot_id, Pot.in_walk_order.includes(:location), :id,
+            ->(pot) { "#{pot.name} (#{pot.location.name})" }, {},
+            class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+      <p class="mt-1 text-xs text-stone-500">
+        Several plants can share one pot — they'll share its readings and watering.
+      </p>
+    </div>
+
+    <div>
+      <%= form.label :light_requirement, "Wants", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.select :light_requirement, Plant::LIGHT_REQUIREMENTS.map { |l| [ "#{l.humanize} light", l ] }, {},
+            class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :acquired_on, class: "block text-sm font-medium text-stone-700" %>
+      <%= form.date_field :acquired_on, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :reference_url, "Reference URL", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.url_field :reference_url, placeholder: "https://…",
+            class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+      <p class="mt-1 text-xs text-stone-500">Care notes kept elsewhere — a wiki, a blog, wherever.</p>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :notes, class: "block text-sm font-medium text-stone-700" %>
+    <%= form.text_area :notes, rows: 4, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= form.submit class: button_classes %>
+    <%= link_to "Cancel", plant.persisted? ? plant : plants_path, class: button_classes(:secondary) %>
+  </div>
+<% end %>

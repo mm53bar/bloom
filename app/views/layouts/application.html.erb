@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html class="h-full">
+  <head>
+    <title><%= content_for(:title) || "Bloom" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Bloom">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="h-full bg-stone-50 text-stone-800 antialiased">
+    <header class="border-b border-stone-200 bg-white">
+      <div class="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-5 py-4">
+        <%= link_to root_path, class: "text-xl font-semibold tracking-tight text-emerald-800" do %>
+          Bloom
+        <% end %>
+
+        <nav class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
+          <%= nav_link_to "Pots", pots_path %>
+          <%= nav_link_to "Walk", walk_pots_path %>
+          <%= nav_link_to "Due", due_pots_path %>
+          <%= nav_link_to "Plants", plants_path %>
+          <%= nav_link_to "Locations", locations_path %>
+        </nav>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-5 py-8">
+      <% if flash[:notice] %>
+        <p class="mb-6 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+          <%= flash[:notice] %>
+        </p>
+      <% end %>
+      <% if flash[:alert] %>
+        <p class="mb-6 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <%= flash[:alert] %>
+        </p>
+      <% end %>
+
+      <%= yield %>
+    </main>
+  </body>
+</html>

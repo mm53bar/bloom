@@ -1,0 +1,48 @@
+<% content_for :title, "Due" %>
+
+<div class="mb-8">
+  <h1 class="text-2xl font-semibold tracking-tight text-stone-900">Due</h1>
+  <p class="mt-1 text-sm text-stone-500">
+    What wants attention, and why. Also available
+    <%= link_to "as JSON", due_pots_path(format: :json), class: "text-emerald-700 underline" %>.
+  </p>
+</div>
+
+<% sections = [
+     [ "Needs water", @needs_water, "Reading is below the dry threshold, or the watering cadence has run out." ],
+     [ "Too wet", @too_wet, "Sitting above the wet threshold — leave these alone." ],
+     [ "Needs checking", @needs_check, "No recent reading. These are the ones worth walking to." ],
+     [ "Needs feeding", @needs_fertilizer, "Growing season, and the feeding interval has elapsed." ]
+   ] %>
+
+<% if sections.all? { |_, pots, _| pots.empty? } %>
+  <p class="rounded-lg border border-emerald-200 bg-emerald-50 p-10 text-center text-emerald-900">
+    Nothing needs anything. Enjoy it.
+  </p>
+<% end %>
+
+<% sections.each do |title, pots, explanation| %>
+  <% next if pots.empty? %>
+
+  <section class="mb-8">
+    <h2 class="text-sm font-semibold uppercase tracking-wide text-stone-500"><%= title %></h2>
+    <p class="mb-3 text-sm text-stone-400"><%= explanation %></p>
+
+    <ul class="divide-y divide-stone-200 overflow-hidden rounded-lg border border-stone-200 bg-white">
+      <% pots.each do |pot| %>
+        <li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
+          <div class="grow">
+            <%= link_to pot.name, pot, class: "font-medium text-stone-900 hover:text-emerald-800" %>
+            <span class="text-sm text-stone-400">&middot; <%= pot.location.name %></span>
+          </div>
+
+          <% if title == "Needs feeding" %>
+            <%= button_to "Fed", fertilized_pot_path(pot), class: button_classes(:secondary) %>
+          <% else %>
+            <%= button_to "Watered", watered_pot_path(pot), class: button_classes(:secondary) %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>

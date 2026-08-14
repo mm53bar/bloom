@@ -1,0 +1,14 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "b917b6ca3e1638f898fa292852de3dbc7dbd5f714ef77ef3e23567d0ac17814a",
+      "check_name": "LinkToHref",
+      "message": "Potentially unsafe model attribute in `link_to` href",
+      "file": "app/views/plants/show.html.erb",
+      "line": 40,
+      "note": "Closed twice over. Plant#reference_url has a model validation anchored at both ends (%r{\\Ahttps?://\\S+\\z}i), so no non-http(s) scheme can be saved through any path that runs validations; and the view calls Plant#safe_reference_url, which re-parses at render time and returns nil unless the result is a URI::HTTP. The second check covers rows written around the validation — a console session, a restored backup. Brakeman flags any model attribute in an href and cannot see either guard."
+    }
+  ],
+  "updated": "2026-08-14T04:00:00Z",
+  "brakeman_version": "8.0.6"
+}
