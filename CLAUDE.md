@@ -14,6 +14,13 @@ round the house with one. This file is standing rules, not a spec — read the c
   Real data is loaded over the JSON API from a file kept outside this repo. See
   `docs/adr/20260814-no-personal-data-in-this-repo.md`. This covers git history too, so it
   holds from the first commit rather than from whenever the repo is made public.
+- **Four levels, each owning one thing.** `Area` (a part of the house) contains `Spot`s (where
+  a pot sits) which hold `Pot`s which hold `Plant`s. **Light belongs to the Spot and nowhere
+  else** — a shelf in a window and a shelf across the same room are not alike, and a second
+  source of truth would eventually disagree with the first. An Area owns its name, walk
+  position and `ha_area`. Creating an Area auto-creates one Spot named after it, and
+  `Spot#full_name` hides that level until an area is actually subdivided. See
+  `docs/adr/20260814-areas-and-spots.md`.
 - **The pot is the unit of care, not the plant.** Readings, care events, thresholds and walk
   position all belong to `Pot`. `Plant` holds what is true of the organism — species, light
   requirement, reference URL. Some pots hold several plants sharing one soil volume. See

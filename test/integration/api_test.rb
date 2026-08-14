@@ -15,7 +15,8 @@ class ApiTest < ActionDispatch::IntegrationTest
                  body["pots"].map { |p| p["name"] }
 
     fern = body["pots"].first
-    assert_equal "Sunroom", fern["location"]
+    assert_equal "Sunroom", fern["area"]
+    assert_equal "Sunroom", fern["spot"]   # single-spot area reads as just the area
     assert_equal "Put the sensor in the Big Fern.", fern["prompt"]
     assert_equal [ "the big fern", "sunroom fern" ], fern["aliases"]
     assert_equal 30, fern["dry_below"]
@@ -93,6 +94,7 @@ class ApiTest < ActionDispatch::IntegrationTest
 
     assert_includes body["needs_water"].map { |p| p["name"] }, "Big Fern"
     assert_not_includes body["needs_water"].map { |p| p["name"] }, "Succulent Bowl"
+    assert_equal "Sunroom", body["needs_water"].first["area"]
     assert_includes body["needs_check"].map { |p| p["name"] }, "Forgotten Pot"
     assert_equal body["needs_water"].size, body.dig("counts", "needs_water")
   end
@@ -101,7 +103,7 @@ class ApiTest < ActionDispatch::IntegrationTest
     assert_difference -> { Pot.count }, 1 do
       post pots_path(format: :json), params: {
         pot: {
-          location_id: locations(:sunroom).id,
+          spot_id: spots(:sunroom_sill).id,
           name: "New Pot",
           medium: "semi_hydro",
           voice_aliases: [ "the new one" ],
@@ -122,7 +124,7 @@ class ApiTest < ActionDispatch::IntegrationTest
 
   test "an invalid pot comes back with errors rather than a 500" do
     post pots_path(format: :json), params: {
-      pot: { location_id: locations(:sunroom).id, name: "Bad", dry_below: 80, wet_above: 20 }
+      pot: { spot_id: spots(:sunroom_sill).id, name: "Bad", dry_below: 80, wet_above: 20 }
     }, as: :json
 
     assert_response :unprocessable_entity
@@ -139,12 +141,15 @@ class ApiTest < ActionDispatch::IntegrationTest
     assert_equal 21, pot.reload.check_interval_days
   end
 
-  test "locations and plants are creatable over the API too" do
-    assert_difference -> { Location.count }, 1 do
-      post locations_path(format: :json),
-           params: { location: { name: "Porch", natural_light: "direct", position: 9 } }, as: :json
+  test "areas and plants are creatable over the API too" do
+    # Creating an area also creates its one spot, so a caller adding a simple
+    # room never has to know spots exist.
+    assert_difference [ -> { Area.count }, -> { Spot.count } ], 1 do
+      post areas_path(format: :json),
+           params: { area: { name: "Porch", position: 9 } }, as: :json
     end
     assert_response :created
+    assert response.parsed_body["single_spot"]
 
     assert_difference -> { Plant.count }, 1 do
       post plants_path(format: :json), params: {
@@ -163,6 +168,33 @@ class ApiTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_equal [ 40.0, 10.0 ], response.parsed_body.map { |r| r["value"] }
+  end
+
+  test "a spot can be added to an area over the API" do
+    area = areas(:sunroom)
+
+    assert_difference -> { area.spots.count }, 1 do
+      post area_spots_path(area, format: :json), params: {
+        spot: { name: "Dark Corner", natural_light: "low" }
+      }, as: :json
+    end
+
+    assert_response :created
+    body = response.parsed_body
+    assert_equal "low", body["effective_light"]
+    assert_equal "Sunroom — Dark Corner", body["full_name"]
+  end
+
+  test "a pot reports both the area and the spot it sits in" do
+    get pot_path(pots(:pothos), format: :json)
+
+    assert_response :success
+    body = response.parsed_body
+
+    assert_equal "Landing", body.dig("area", "name")
+    assert_equal "Shelf", body.dig("spot", "name")
+    # The grow light on that shelf, not anything about the area.
+    assert_equal "medium", body.dig("spot", "effective_light")
   end
 
   test "a pot carries its light verdict for each plant in it" do

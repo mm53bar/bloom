@@ -12,9 +12,12 @@ app tells you where to go and what to say.
 
 ## What it models
 
-- **Location** — a spot in the house: its natural light, and optionally a grow light. A
-  location with a grow light counts as one step brighter, which is what decides whether a
-  plant is getting what it asks for.
+- **Area** — a part of the house: a room, a deck, a balcony. Holds no light of its own.
+- **Spot** — where in that area a pot actually sits: a windowsill, a shelf, the top of a
+  cabinet. This is where light lives, because a shelf in a south window and a shelf on the
+  opposite wall of the same room are nothing alike. A spot with a grow light counts as one
+  step brighter, which is what decides whether a plant is getting what it asks for. Most
+  areas have exactly one spot and it's created for you.
 - **Pot** — the unit of care. Thresholds, watering and feeding cadence, walk position and
   voice aliases live here, because a pot is what you water and what you put a probe into.
 - **Plant** — what's growing in a pot, and what light it wants. Several plants can share one
@@ -71,7 +74,7 @@ header. There's no separate `/api` namespace.
 | `POST /pots/:id/moisture_readings.json` | Record a reading; the response includes the verdict, already phrased |
 | `POST /pots/:id/watered.json` | Mark a pot watered |
 | `POST /pots/:id/fertilized.json` | Mark a pot fed |
-| `GET`/`POST`/`PATCH` `/pots`, `/plants`, `/locations` | Full CRUD, which is how data gets loaded |
+| `GET`/`POST`/`PATCH` `/pots`, `/plants`, `/areas`, `/spots` | Full CRUD, which is how data gets loaded |
 
 The verdict comes back with the reading on purpose. Callers shouldn't hold their own copy of
 a pot's thresholds, or know that semi-hydro is judged differently:
@@ -89,6 +92,7 @@ See `docs/home-assistant.md` for a worked Home Assistant integration.
 
 Decisions worth their own writeup are in `docs/adr/`. The ones most likely to surprise you:
 
+- Areas contain spots, and light belongs to the spot rather than the room
 - The pot, not the plant, is the unit of care
 - Growing medium selects a care regime rather than a set of numbers
 - A pot with no history at all asks to be measured, not watered

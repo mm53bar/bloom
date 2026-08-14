@@ -10,7 +10,7 @@ class Pot < ApplicationRecord
   # instead of growth, so the fertilizer schedule sleeps outside these months.
   GROWING_SEASON_MONTHS = (3..9).freeze
 
-  belongs_to :location
+  belongs_to :spot
   has_many :plants, -> { order(:name) }, dependent: :destroy
   has_many :care_events, -> { order(occurred_on: :desc, id: :desc) }, dependent: :destroy
   has_many :moisture_readings, -> { order(read_at: :desc) }, dependent: :destroy
@@ -24,13 +24,19 @@ class Pot < ApplicationRecord
   validate :wet_above_exceeds_dry_below
 
   scope :in_walk_order, -> {
-    joins(:location).order("locations.position", "locations.name", :position, :name)
+    joins(spot: :area).order("areas.position", "areas.name", "spots.position", "spots.name",
+                             :position, :name)
   }
-  scope :with_care_data, -> { includes(:location, :plants, :care_events, :moisture_readings) }
+  scope :with_care_data, -> {
+    includes(:plants, :care_events, :moisture_readings, spot: :area)
+  }
 
   normalizes :voice_aliases, with: ->(list) {
     Array(list).map { |name| name.to_s.strip }.reject(&:blank?).uniq
   }
+
+  # Light and grouping both hang off the spot; nothing reads them from here.
+  delegate :area, to: :spot
 
   def soil? = medium == "soil"
   def semi_hydro? = medium == "semi_hydro"

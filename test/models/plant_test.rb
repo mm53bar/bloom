@@ -28,8 +28,27 @@ class PlantTest < ActiveSupport::TestCase
     assert_not plant.valid?
   end
 
-  test "plants reach their location through their pot" do
-    assert_equal locations(:sunroom), plants(:jade).location
+  test "plants reach their spot and area through their pot" do
+    assert_equal spots(:sunroom_sill), plants(:jade).spot
+    assert_equal areas(:sunroom), plants(:jade).area
+  end
+
+  test "two plants in one area can disagree about whether their light is enough" do
+    # Same area, different spots — which is only expressible because light is on Spot.
+    shelf_plant = plants(:golden_pothos)                       # low light, on the lit shelf
+    corner_plant = Plant.create!(pot: pots_in_corner, name: "Fussy",
+                                 light_requirement: "bright")
+
+    assert shelf_plant.light_satisfied?
+    assert_not corner_plant.light_satisfied?
+    assert_equal shelf_plant.area, corner_plant.area
+  end
+
+  private
+
+  def pots_in_corner
+    Pot.create!(spot: spots(:landing_corner), name: "Corner Pot",
+                dry_below: 20, wet_above: 80, check_interval_days: 7)
   end
 
   test "a reference url must be http or https" do

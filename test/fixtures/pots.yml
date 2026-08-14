@@ -1,7 +1,7 @@
 # Invented pots — see locations.yml.
 
 fern:
-  location: sunroom
+  spot: sunroom_sill
   name: Big Fern
   voice_aliases: [ "the big fern", "sunroom fern" ]
   medium: soil
@@ -15,7 +15,7 @@ fern:
 # The shared-container case: one soil volume, one reading, one watering
 # decision, several plants living in it.
 succulent_bowl:
-  location: sunroom
+  spot: sunroom_sill
   name: Succulent Bowl
   voice_aliases: [ "the succulents" ]
   medium: soil
@@ -27,7 +27,7 @@ succulent_bowl:
 
 # Semi-hydro: thresholds exist but are not what decides watering.
 pothos:
-  location: landing
+  spot: landing_shelf
   name: Clay Ball Pothos
   medium: semi_hydro
   dry_below: 20
@@ -40,7 +40,7 @@ pothos:
 # Deliberately under-lit: a bright-light plant parked in a dark cellar, so the
 # light-mismatch report has something to find.
 orphan:
-  location: cellar
+  spot: cellar_bench
   name: Forgotten Pot
   medium: soil
   dry_below: 25

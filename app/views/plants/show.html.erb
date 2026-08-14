@@ -4,7 +4,7 @@
   <div>
     <p class="text-sm text-stone-500">
       <%= link_to @plant.pot.name, @plant.pot, class: "hover:text-emerald-800" %>
-      &middot; <%= link_to @plant.location.name, @plant.location, class: "hover:text-emerald-800" %>
+      &middot; <%= link_to spot_label(@plant.spot), @plant.spot, class: "hover:text-emerald-800" %>
     </p>
     <h1 class="mt-1 text-2xl font-semibold tracking-tight text-stone-900"><%= @plant.name %></h1>
     <% if @plant.species.present? %>
@@ -24,7 +24,7 @@
     <div class="flex justify-between gap-4">
       <dt class="text-stone-500">Gets</dt>
       <dd class="<%= @plant.light_satisfied? ? "text-stone-800" : "text-amber-800" %>">
-        <%= @plant.location.effective_light.humanize %>
+        <%= @plant.spot.effective_light.humanize %>
         <%= "(short by #{@plant.light_shortfall})" unless @plant.light_satisfied? %>
       </dd>
     </div>

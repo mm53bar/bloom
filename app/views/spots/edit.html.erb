@@ -1,0 +1,5 @@
+<% content_for :title, "Editing #{@spot.full_name}" %>
+<h1 class="mb-6 text-2xl font-semibold tracking-tight text-stone-900">
+  Editing <%= @spot.full_name %>
+</h1>
+<%= render "form", spot: @spot %>

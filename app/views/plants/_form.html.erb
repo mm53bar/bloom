@@ -23,8 +23,8 @@
 
     <div>
       <%= form.label :pot_id, "Pot", class: "block text-sm font-medium text-stone-700" %>
-      <%= form.collection_select :pot_id, Pot.in_walk_order.includes(:location), :id,
-            ->(pot) { "#{pot.name} (#{pot.location.name})" }, {},
+      <%= form.collection_select :pot_id, Pot.in_walk_order.includes(spot: :area), :id,
+            ->(pot) { "#{pot.name} (#{pot.spot.full_name})" }, {},
             class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
       <p class="mt-1 text-xs text-stone-500">
         Several plants can share one pot — they'll share its readings and watering.

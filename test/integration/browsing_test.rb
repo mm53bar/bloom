@@ -93,7 +93,7 @@ class BrowsingTest < ActionDispatch::IntegrationTest
     assert_difference -> { Pot.count }, 1 do
       post pots_path, params: {
         pot: {
-          location_id: locations(:cellar).id, name: "Form Pot", medium: "soil",
+          spot_id: spots(:cellar_bench).id, name: "Form Pot", medium: "soil",
           dry_below: 20, wet_above: 80, check_interval_days: 7,
           voice_alias_list: "formy, the form pot"
         }
@@ -105,18 +105,32 @@ class BrowsingTest < ActionDispatch::IntegrationTest
     assert_redirected_to pot
   end
 
-  test "locations and plants have working pages" do
-    get locations_path
+  test "areas, spots and plants have working pages" do
+    get areas_path
     assert_response :success
     assert_select "a", text: "Sunroom"
 
-    get location_path(locations(:landing))
+    get area_path(areas(:landing))
     assert_response :success
+    assert_select "a", text: "Shelf"
+    assert_select "a", text: "Far Corner"
     assert_select "span", text: /grow light/
+
+    get spot_path(spots(:landing_corner))
+    assert_response :success
+    assert_select "h1", text: "Far Corner"
 
     get plant_path(plants(:jade))
     assert_response :success
     assert_select "h1", text: "Jade"
+  end
+
+  test "an area page shows each spot's own light rather than the area's" do
+    get area_path(areas(:landing))
+
+    assert_response :success
+    # Both spots are "low" naturally; only the shelf has a lamp lifting it.
+    assert_select "span", text: /grow light/, count: 1
   end
 
   test "removing a pot takes its plants and readings with it" do

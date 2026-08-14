@@ -26,7 +26,7 @@ class PotsController < ApplicationController
   end
 
   def new
-    @pot = Pot.new(location: Location.in_walk_order.first)
+    @pot = Pot.new(spot: Spot.in_walk_order.first)
   end
 
   def edit
@@ -100,7 +100,7 @@ class PotsController < ApplicationController
 
   def pot_params
     params.expect(pot: [
-      :location_id, :name, :medium, :dry_below, :wet_above,
+      :spot_id, :name, :medium, :dry_below, :wet_above,
       :water_interval_days, :fertilize_interval_days, :check_interval_days,
       :position, :potted_on, :notes, :voice_alias_list, { voice_aliases: [] }
     ])

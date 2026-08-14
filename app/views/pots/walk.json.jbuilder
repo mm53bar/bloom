@@ -7,7 +7,8 @@ json.pot_count @pots.size
 json.pots @pots do |pot|
   json.extract! pot, :id, :name, :medium, :dry_below, :wet_above
   json.aliases pot.voice_aliases
-  json.location pot.location.name
+  json.area pot.area.name
+  json.spot pot.spot.full_name
   json.prompt pot.probe_prompt
   json.status pot.status
   json.needs_check pot.needs_check?

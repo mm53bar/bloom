@@ -33,7 +33,7 @@
         <li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
           <div class="grow">
             <%= link_to pot.name, pot, class: "font-medium text-stone-900 hover:text-emerald-800" %>
-            <span class="text-sm text-stone-400">&middot; <%= pot.location.name %></span>
+            <span class="text-sm text-stone-400">&middot; <%= spot_label(pot.spot) %></span>
           </div>
 
           <% if title == "Needs feeding" %>

@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_14_034948) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_14_180000) do
+  create_table "areas", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "ha_area"
+    t.string "name", null: false
+    t.text "notes"
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_areas_on_name", unique: true
+    t.index ["position"], name: "index_areas_on_position"
+  end
+
   create_table "care_events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "kind", null: false
@@ -21,19 +32,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_034948) do
     t.datetime "updated_at", null: false
     t.index ["pot_id", "kind", "occurred_on"], name: "index_care_events_on_pot_id_and_kind_and_occurred_on"
     t.index ["pot_id"], name: "index_care_events_on_pot_id"
-  end
-
-  create_table "locations", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "exposure"
-    t.string "grow_light_entity_id"
-    t.string "name", null: false
-    t.string "natural_light", default: "medium", null: false
-    t.text "notes"
-    t.integer "position", default: 0, null: false
-    t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_locations_on_name", unique: true
-    t.index ["position"], name: "index_locations_on_position"
   end
 
   create_table "moisture_readings", force: :cascade do |t|
@@ -65,22 +63,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_034948) do
     t.datetime "created_at", null: false
     t.integer "dry_below", default: 20, null: false
     t.integer "fertilize_interval_days"
-    t.integer "location_id", null: false
     t.string "medium", default: "soil", null: false
     t.string "name", null: false
     t.text "notes"
     t.integer "position", default: 0, null: false
     t.date "potted_on"
+    t.integer "spot_id", null: false
     t.datetime "updated_at", null: false
     t.json "voice_aliases", default: [], null: false
     t.integer "water_interval_days"
     t.integer "wet_above", default: 100, null: false
-    t.index ["location_id", "position"], name: "index_pots_on_location_id_and_position"
-    t.index ["location_id"], name: "index_pots_on_location_id"
+    t.index ["spot_id", "position"], name: "index_pots_on_spot_id_and_position"
+    t.index ["spot_id"], name: "index_pots_on_spot_id"
+  end
+
+  create_table "spots", force: :cascade do |t|
+    t.integer "area_id", null: false
+    t.datetime "created_at", null: false
+    t.string "exposure"
+    t.string "grow_light_entity_id"
+    t.string "name", null: false
+    t.string "natural_light", default: "medium", null: false
+    t.text "notes"
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["area_id", "name"], name: "index_spots_on_area_id_and_name", unique: true
+    t.index ["area_id", "position"], name: "index_spots_on_area_id_and_position"
+    t.index ["area_id"], name: "index_spots_on_area_id"
   end
 
   add_foreign_key "care_events", "pots"
   add_foreign_key "moisture_readings", "pots"
   add_foreign_key "plants", "pots"
-  add_foreign_key "pots", "locations"
+  add_foreign_key "pots", "spots"
+  add_foreign_key "spots", "areas"
 end

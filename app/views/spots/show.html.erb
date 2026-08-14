@@ -1,29 +1,30 @@
-<% content_for :title, @location.name %>
+<% content_for :title, @spot.full_name %>
 
 <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
   <div>
-    <h1 class="text-2xl font-semibold tracking-tight text-stone-900"><%= @location.name %></h1>
+    <p class="text-sm text-stone-500">
+      <%= link_to @spot.area.name, @spot.area, class: "hover:text-emerald-800" %>
+    </p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-stone-900"><%= @spot.name %></h1>
     <p class="mt-2 flex flex-wrap items-center gap-2 text-sm text-stone-500">
-      <%= light_badge @location.natural_light %>
-      <% if @location.grow_light? %>
+      <%= light_badge @spot.natural_light %>
+      <% if @spot.grow_light? %>
         <span class="rounded border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-xs text-emerald-900">
           + grow light
         </span>
-        <span class="text-stone-400">effectively <%= @location.effective_light %></span>
+        <span class="text-stone-400">effectively <%= @spot.effective_light %></span>
       <% end %>
     </p>
-    <% if @location.exposure.present? %>
-      <p class="mt-2 text-sm text-stone-600"><%= @location.exposure %></p>
+    <% if @spot.exposure.present? %>
+      <p class="mt-2 text-sm text-stone-600"><%= @spot.exposure %></p>
     <% end %>
   </div>
 
-  <div class="flex gap-2">
-    <%= link_to "Edit", edit_location_path(@location), class: button_classes(:secondary) %>
-  </div>
+  <%= link_to "Edit", edit_spot_path(@spot), class: button_classes(:secondary) %>
 </div>
 
-<% if @location.notes.present? %>
-  <p class="mb-6 whitespace-pre-line text-sm text-stone-600"><%= @location.notes %></p>
+<% if @spot.notes.present? %>
+  <p class="mb-6 whitespace-pre-line text-sm text-stone-600"><%= @spot.notes %></p>
 <% end %>
 
 <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-stone-500">Pots here</h2>
@@ -47,7 +48,7 @@
 <% end %>
 
 <div class="mt-8">
-  <%= button_to "Remove this location", @location, method: :delete,
+  <%= button_to "Remove this spot", @spot, method: :delete,
         class: button_classes(:danger),
-        form: { data: { turbo_confirm: "Remove #{@location.name} and every pot in it?" } } %>
+        form: { data: { turbo_confirm: "Remove #{@spot.name} and every pot in it?" } } %>
 </div>

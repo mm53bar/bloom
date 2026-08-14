@@ -2,7 +2,7 @@ class PlantsController < ApplicationController
   before_action :set_plant, only: %i[ show edit update destroy ]
 
   def index
-    @plants = Plant.includes(pot: :location).by_name
+    @plants = Plant.includes(pot: { spot: :area }).by_name
     # The point of tracking light at all: plants asking for more than their spot
     # provides. Cheap to compute, and it's the one report that suggests moving
     # a plant rather than watering it.
@@ -56,7 +56,7 @@ class PlantsController < ApplicationController
   private
 
   def set_plant
-    @plant = Plant.includes(pot: :location).find(params[:id])
+    @plant = Plant.includes(pot: { spot: :area }).find(params[:id])
   end
 
   def render_invalid(template)

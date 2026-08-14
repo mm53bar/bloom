@@ -16,7 +16,8 @@ Everything below uses placeholder hostnames and entity IDs. Substitute your own.
 # configuration.yaml
 rest:
   # The ordered round through the house. Everything needed to run it is in the
-  # attributes: prompts, aliases, thresholds, and where to post each reading.
+  # attributes: prompts, aliases, thresholds, the area and spot, and where to
+  # post each reading.
   - resource: http://bloom.example:3214/pots/walk.json
     scan_interval: 900
     sensor:

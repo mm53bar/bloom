@@ -3,7 +3,10 @@
 <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
   <div>
     <p class="text-sm text-stone-500">
-      <%= link_to @pot.location.name, @pot.location, class: "hover:text-emerald-800" %>
+      <%= link_to @pot.area.name, @pot.area, class: "hover:text-emerald-800" %>
+      <% unless @pot.area.single_spot? %>
+        &middot; <%= link_to @pot.spot.name, @pot.spot, class: "hover:text-emerald-800" %>
+      <% end %>
     </p>
     <h1 class="mt-1 text-2xl font-semibold tracking-tight text-stone-900"><%= @pot.name %></h1>
     <p class="mt-2 flex flex-wrap items-center gap-2 text-sm text-stone-500">

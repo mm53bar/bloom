@@ -12,7 +12,8 @@ end
   json.set! key do
     json.array! pots do |pot|
       json.extract! pot, :id, :name
-      json.location pot.location.name
+      json.area pot.area.name
+      json.spot pot.spot.full_name
       json.status pot.status
       json.url pot_url(pot, format: :json)
     end

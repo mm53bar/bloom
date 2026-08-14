@@ -1,0 +1,54 @@
+<% content_for :title, "Areas" %>
+
+<div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-semibold tracking-tight text-stone-900">Areas</h1>
+    <p class="mt-1 max-w-2xl text-sm text-stone-500">
+      Parts of the house, each holding one or more spots. Light belongs to the spot —
+      a grow light counts as one step brighter than the natural light there.
+    </p>
+  </div>
+
+  <%= link_to "Add an area", new_area_path, class: button_classes %>
+</div>
+
+<% if @areas.empty? %>
+  <p class="rounded-lg border border-dashed border-stone-300 bg-white p-10 text-center text-stone-600">
+    No areas yet.
+  </p>
+<% else %>
+  <div class="space-y-4">
+    <% @areas.each do |area| %>
+      <section class="overflow-hidden rounded-lg border border-stone-200 bg-white">
+        <div class="flex flex-wrap items-baseline justify-between gap-2 border-b border-stone-200 px-4 py-3">
+          <h2 class="font-medium text-stone-900">
+            <%= link_to area.name, area, class: "hover:text-emerald-800" %>
+          </h2>
+          <p class="text-sm text-stone-400">
+            <%= pluralize area.spots.size, "spot" %> &middot; <%= pluralize area.pots.size, "pot" %>
+          </p>
+        </div>
+
+        <ul class="divide-y divide-stone-100">
+          <% area.spots.each do |spot| %>
+            <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 text-sm">
+              <span class="min-w-40 grow">
+                <%= link_to spot.name, spot, class: "text-stone-700 hover:text-emerald-800" %>
+                <% if spot.exposure.present? %>
+                  <span class="text-stone-400">&middot; <%= spot.exposure %></span>
+                <% end %>
+              </span>
+              <%= light_badge spot.natural_light %>
+              <% if spot.grow_light? %>
+                <span class="rounded border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-xs text-emerald-900">
+                  + grow light
+                </span>
+              <% end %>
+              <span class="text-xs text-stone-400"><%= pluralize spot.pots.size, "pot" %></span>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+  </div>
+<% end %>

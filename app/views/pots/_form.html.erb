@@ -17,9 +17,13 @@
     </div>
 
     <div>
-      <%= form.label :location_id, "Location", class: "block text-sm font-medium text-stone-700" %>
-      <%= form.collection_select :location_id, Location.in_walk_order, :id, :name, {},
+      <%= form.label :spot_id, "Spot", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.collection_select :spot_id, Spot.in_walk_order.includes(:area), :id,
+            ->(spot) { spot.full_name }, {},
             class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+      <p class="mt-1 text-xs text-stone-500">
+        The place the pot sits. Light comes from here, not from the area.
+      </p>
     </div>
 
     <div class="sm:col-span-2">

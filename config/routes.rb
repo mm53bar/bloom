@@ -7,7 +7,14 @@ Rails.application.routes.draw do
   # Ordinary resourceful routes, HTML and JSON off the same URLs (format
   # negotiated). The JSON side is what Home Assistant and the data loader talk
   # to — there is no separate /api namespace to keep in sync.
-  resources :locations
+  #
+  # Area contains Spots, Spots hold Pots, Pots hold Plants. Light belongs to the
+  # Spot; the Area is the name a person uses for that part of the house.
+  resources :areas do
+    resources :spots, only: [ :new, :create ]
+  end
+  resources :spots, except: [ :new, :create, :index ]
+
   resources :plants
 
   resources :pots do

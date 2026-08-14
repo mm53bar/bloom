@@ -15,17 +15,17 @@
   <div class="rounded-lg border border-dashed border-stone-300 bg-white p-10 text-center">
     <p class="text-stone-600">Nothing here yet.</p>
     <p class="mt-1 text-sm text-stone-500">
-      Add a <%= link_to "location", new_location_path, class: "text-emerald-700 underline" %>
+      Add an <%= link_to "area", new_area_path, class: "text-emerald-700 underline" %>
       first, then the pots that sit in it.
     </p>
   </div>
 <% else %>
-  <% @pots.group_by(&:location).each do |location, pots| %>
+  <% @pots.group_by(&:spot).each do |spot, pots| %>
     <section class="mb-8">
       <h2 class="mb-3 flex items-baseline gap-3 text-sm font-semibold uppercase tracking-wide text-stone-500">
-        <%= link_to location.name, location, class: "hover:text-emerald-800" %>
-        <%= light_badge location.effective_light %>
-        <% if location.grow_light? %>
+        <%= link_to spot_label(spot), spot, class: "hover:text-emerald-800" %>
+        <%= light_badge spot.effective_light %>
+        <% if spot.grow_light? %>
           <span class="text-xs font-normal normal-case text-stone-400">grow light</span>
         <% end %>
       </h2>

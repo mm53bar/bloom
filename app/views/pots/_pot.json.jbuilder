@@ -4,10 +4,16 @@ json.extract! pot, :id, :name, :medium, :dry_below, :wet_above,
 
 json.aliases pot.voice_aliases
 
-json.location do
-  json.id pot.location_id
-  json.name pot.location.name
-  json.effective_light pot.location.effective_light
+json.spot do
+  json.id pot.spot_id
+  json.name pot.spot.name
+  json.full_name pot.spot.full_name
+  json.effective_light pot.spot.effective_light
+end
+
+json.area do
+  json.id pot.area.id
+  json.name pot.area.name
 end
 
 # Verdicts, so a caller never needs its own copy of the thresholds.

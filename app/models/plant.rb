@@ -1,9 +1,10 @@
 class Plant < ApplicationRecord
-  # A plant can want anything a location can offer, except "none".
-  LIGHT_REQUIREMENTS = (Location::LIGHT_LEVELS - %w[ none ]).freeze
+  # A plant can want anything a spot can offer, except "none".
+  LIGHT_REQUIREMENTS = (Spot::LIGHT_LEVELS - %w[ none ]).freeze
 
   belongs_to :pot
-  has_one :location, through: :pot
+  has_one :spot, through: :pot
+  has_one :area, through: :spot
 
   validates :name, presence: true
   validates :light_requirement, inclusion: { in: LIGHT_REQUIREMENTS }
@@ -25,8 +26,8 @@ class Plant < ApplicationRecord
   # against effective_light means a grow light can rescue an otherwise dim
   # corner — which is the actionable version of the question.
   def light_satisfied?
-    Location::LIGHT_LEVELS.index(location.effective_light) >=
-      Location::LIGHT_LEVELS.index(light_requirement)
+    Spot::LIGHT_LEVELS.index(spot.effective_light) >=
+      Spot::LIGHT_LEVELS.index(light_requirement)
   end
 
   # Belt and braces: the validation above covers anything saved through the app,
@@ -44,7 +45,7 @@ class Plant < ApplicationRecord
   def light_shortfall
     return 0 if light_satisfied?
 
-    Location::LIGHT_LEVELS.index(light_requirement) -
-      Location::LIGHT_LEVELS.index(location.effective_light)
+    Spot::LIGHT_LEVELS.index(light_requirement) -
+      Spot::LIGHT_LEVELS.index(spot.effective_light)
   end
 end

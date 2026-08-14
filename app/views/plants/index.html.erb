@@ -17,8 +17,8 @@
         <li>
           <%= link_to plant.name, plant, class: "font-medium text-amber-900 underline" %>
           <span class="text-amber-800">
-            wants <%= plant.light_requirement %>, <%= plant.location.name %> gives
-            <%= plant.location.effective_light %>
+            wants <%= plant.light_requirement %>, <%= spot_label(plant.spot) %> gives
+            <%= plant.spot.effective_light %>
           </span>
         </li>
       <% end %>
@@ -41,7 +41,7 @@
           <% end %>
           <p class="text-sm text-stone-500">
             <%= link_to plant.pot.name, plant.pot, class: "hover:text-emerald-800" %>
-            &middot; <%= plant.location.name %>
+            &middot; <%= spot_label(plant.spot) %>
           </p>
         </div>
         <%= light_badge plant.light_requirement %>

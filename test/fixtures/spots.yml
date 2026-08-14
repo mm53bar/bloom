@@ -1,0 +1,32 @@
+# Invented spots — see areas.yml.
+
+sunroom_sill:
+  area: sunroom
+  name: Window Sill
+  position: 1
+  natural_light: bright
+  exposure: South-facing glass on three sides
+
+# Dim on its own, but there's an LED over it — so effectively a step brighter.
+landing_shelf:
+  area: landing
+  name: Shelf
+  position: 1
+  natural_light: low
+  grow_light_entity_id: switch.example_grow_light
+  exposure: No window of its own; borrowed light from the stairwell
+
+# Same room, same natural light, no lamp. The pair is the whole point.
+landing_corner:
+  area: landing
+  name: Far Corner
+  position: 2
+  natural_light: low
+  exposure: Across the landing from the shelf, nothing over it
+
+cellar_bench:
+  area: cellar
+  name: Bench
+  position: 1
+  natural_light: none
+  exposure: Below grade, no natural light at all

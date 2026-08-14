@@ -1,0 +1,67 @@
+<% content_for :title, @area.name %>
+
+<div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-semibold tracking-tight text-stone-900"><%= @area.name %></h1>
+    <p class="mt-1 text-sm text-stone-500">
+      <%= pluralize @spots.size, "spot" %> &middot; <%= pluralize @pots.size, "pot" %>
+      <% if @area.ha_area.present? %>
+        &middot; <span class="font-mono text-xs"><%= @area.ha_area %></span>
+      <% end %>
+    </p>
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <%= link_to "Add a spot", new_area_spot_path(@area), class: button_classes %>
+    <%= link_to "Edit", edit_area_path(@area), class: button_classes(:secondary) %>
+  </div>
+</div>
+
+<% if @area.notes.present? %>
+  <p class="mb-6 whitespace-pre-line text-sm text-stone-600"><%= @area.notes %></p>
+<% end %>
+
+<% @spots.each do |spot| %>
+  <section class="mb-6 overflow-hidden rounded-lg border border-stone-200 bg-white">
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-stone-200 px-4 py-3">
+      <h2 class="min-w-40 grow font-medium text-stone-900">
+        <%= link_to spot.name, spot, class: "hover:text-emerald-800" %>
+      </h2>
+      <%= light_badge spot.natural_light %>
+      <% if spot.grow_light? %>
+        <span class="rounded border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-xs text-emerald-900">
+          + grow light &rarr; <%= spot.effective_light %>
+        </span>
+      <% end %>
+      <%= link_to "Edit", edit_spot_path(spot), class: "text-sm text-emerald-700 underline" %>
+    </div>
+
+    <% if spot.exposure.present? %>
+      <p class="border-b border-stone-100 px-4 py-2 text-sm text-stone-500"><%= spot.exposure %></p>
+    <% end %>
+
+    <% if spot.pots.empty? %>
+      <p class="px-4 py-3 text-sm text-stone-400">Nothing in this spot yet.</p>
+    <% else %>
+      <ul class="divide-y divide-stone-100">
+        <% spot.pots.each do |pot| %>
+          <li class="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2">
+            <div class="min-w-40 grow">
+              <%= link_to pot.name, pot, class: "text-stone-800 hover:text-emerald-800" %>
+              <p class="text-sm text-stone-500">
+                <%= pot.plants.map(&:name).to_sentence.presence || "no plants recorded" %>
+              </p>
+            </div>
+            <%= status_badge pot.status %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
+<% end %>
+
+<div class="mt-8">
+  <%= button_to "Remove this area", @area, method: :delete,
+        class: button_classes(:danger),
+        form: { data: { turbo_confirm: "Remove #{@area.name}, its spots, and every pot in them?" } } %>
+</div>

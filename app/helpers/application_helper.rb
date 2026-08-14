@@ -22,6 +22,11 @@ module ApplicationHelper
       class: "inline-block rounded-full border px-2.5 py-0.5 text-xs font-medium #{STATUS_STYLES.fetch(status, STATUS_STYLES['fine'])}"
   end
 
+  # Areas with one spot read as just the area name; subdivided ones show both.
+  def spot_label(spot)
+    spot.full_name
+  end
+
   def light_badge(level)
     tag.span level.humanize,
       class: "inline-block rounded border border-stone-300 bg-white px-2 py-0.5 text-xs text-stone-600"
