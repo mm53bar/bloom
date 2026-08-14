@@ -35,7 +35,13 @@ port ENV.fetch("PORT", 3000)
 plugin :tmp_restart
 
 # Run the Solid Queue supervisor inside of Puma for single-server deployments.
-plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"]
+#
+# Gated on RAILS_ENV rather than the generator's SOLID_QUEUE_IN_PUMA, so the
+# deployed image needs no extra environment variable to get a working queue —
+# which is what compose.yaml and the README already promise. Without this the
+# container runs a web server only, and any enqueued job sits unprocessed
+# forever with nothing to indicate why.
+plugin :solid_queue if ENV.fetch("RAILS_ENV", "development") == "production"
 
 # Specify the PID file. Defaults to tmp/pids/server.pid in development.
 # In other environments, only set the PID file if requested.
