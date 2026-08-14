@@ -42,3 +42,8 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# Written by the Dockerfile during an image build so the footer can show the
+# commit being served. Never committed — a stale one would misreport the build.
+/REVISION
+/REVISION_SHORT

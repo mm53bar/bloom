@@ -16,6 +16,15 @@ module Bloom
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
 
+    # The running build's git SHA, written into REVISION/REVISION_SHORT by the
+    # Dockerfile so the footer can say which commit is being served. Falls back to
+    # "dev" outside a built image, and the Dockerfile writes "unknown" if it built
+    # without a .git directory.
+    revision       = Rails.root.join("REVISION")
+    revision_short = Rails.root.join("REVISION_SHORT")
+    config.x.git_sha       = revision.exist?       ? revision.read.strip       : "dev"
+    config.x.git_sha_short = revision_short.exist? ? revision_short.read.strip : "dev"
+
     # Bloom attaches no files, so the `image_processing` gem was dropped from the
     # Gemfile and libvips from the image. Active Storage still comes in via
     # `rails/all` and warns on every boot that variants need a processor it can't

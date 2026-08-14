@@ -128,4 +128,45 @@ class BrowsingTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to pots_path
   end
+
+  # --- build footer -----------------------------------------------------------
+
+  test "the footer links the build SHA to its commit" do
+    with_revision("abc123def4567890", "abc123d") do
+      get root_path
+
+      assert_select "footer a[href=?]",
+                    "https://github.com/mm53bar/bloom/commit/abc123def4567890",
+                    text: "abc123d"
+    end
+  end
+
+  test "the footer shows a plain marker when not running a built image" do
+    with_revision("dev", "dev") do
+      get root_path
+
+      assert_select "footer span", text: "dev"
+      assert_select "footer a", false, "should not link to a commit that doesn't exist"
+    end
+  end
+
+  test "an unknown revision does not become a broken commit link" do
+    # The Dockerfile writes "unknown" when it builds without a .git directory.
+    with_revision("unknown", "unknown") do
+      get root_path
+
+      assert_select "footer a", false
+    end
+  end
+
+  private
+
+  def with_revision(sha, short)
+    original = [ Rails.configuration.x.git_sha, Rails.configuration.x.git_sha_short ]
+    Rails.configuration.x.git_sha = sha
+    Rails.configuration.x.git_sha_short = short
+    yield
+  ensure
+    Rails.configuration.x.git_sha, Rails.configuration.x.git_sha_short = original
+  end
 end

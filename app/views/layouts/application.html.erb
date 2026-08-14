@@ -50,5 +50,16 @@
 
       <%= yield %>
     </main>
+
+    <footer class="mx-auto max-w-5xl px-5 py-6 text-center text-xs text-stone-400">
+      <% sha = Rails.configuration.x.git_sha %>
+      <% short = Rails.configuration.x.git_sha_short %>
+      <% if sha.present? && !%w[ dev unknown ].include?(sha) %>
+        <%= link_to short, "https://github.com/mm53bar/bloom/commit/#{sha}",
+              target: "_blank", rel: "noopener", class: "font-mono hover:text-stone-600" %>
+      <% else %>
+        <span class="font-mono"><%= short %></span>
+      <% end %>
+    </footer>
   </body>
 </html>
