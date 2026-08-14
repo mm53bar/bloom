@@ -22,6 +22,7 @@ RUN apt-get update -qq && \
 
 # Set production environment variables and enable jemalloc for reduced memory usage and latency.
 ENV RAILS_ENV="production" \
+    HTTP_PORT="8080" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development" \
@@ -69,9 +70,16 @@ USER 1000:1000
 COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --chown=rails:rails --from=build /rails /rails
 
+# The container runs as an arbitrary UID (compose `user:`), whose home dir isn't
+# writable — Bundler then warns and falls back to a /tmp temp home on every boot.
+# Point HOME at the world-writable tmp dir to silence it.
+ENV HOME="/rails/tmp"
+
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
+# Start server via Thruster by default, this can be overwritten at runtime.
+# Thruster listens on HTTP_PORT (8080, set in the ENV above) rather than its
+# default of 80, which a non-root user cannot bind. EXPOSE is documentation.
+EXPOSE 8080
 CMD ["./bin/thrust", "./bin/rails", "server"]
