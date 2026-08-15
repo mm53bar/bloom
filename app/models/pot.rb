@@ -133,8 +133,14 @@ class Pot < ApplicationRecord
   end
 
   def display_name(duplicates = self.class.duplicated_names)
-    duplicates.include?(name) ? "#{name} (#{area.name})" : name
+    duplicates.include?(name) ? "#{name} (#{place_name})" : name
   end
+
+  # The smallest thing that actually locates this pot: the area when it holds a
+  # single spot, the spot when it doesn't. Qualifying by area alone isn't enough —
+  # a living room with a window shelf and a north shelf can hold two "Spider Plant"
+  # pots, and "Spider Plant (Living Room)" would name them both.
+  def place_name = area.single_spot? ? area.name : spot.name
 
   # Spoken phrasing always names the place, ambiguous or not: this is said while
   # walking towards the plant, so "the TV Room Snake Plant" is an instruction and
@@ -143,10 +149,7 @@ class Pot < ApplicationRecord
   # Place first, which avoids picking a preposition — "on the Buffet" and "in the
   # Kitchen" and "on the Deck" all disagree — and happens to reconstruct exactly
   # the qualified names these pots used to be stored under.
-  def spoken_name
-    qualifier = area.single_spot? ? area.name : spot.name
-    "#{qualifier} #{name}"
-  end
+  def spoken_name = "#{place_name} #{name}"
 
   # The app owns the phrasing, so a voice assistant doesn't have to know that
   # semi-hydro is checked differently from soil.

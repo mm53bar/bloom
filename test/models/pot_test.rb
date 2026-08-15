@@ -220,6 +220,18 @@ class PotTest < ActiveSupport::TestCase
     assert_equal "Big Fern", @fern.display_name(duplicates)
   end
 
+  test "duplicates inside one subdivided area are qualified by spot, not area" do
+    # Both would read "Spider Plant (Landing)" if the area were the qualifier.
+    shelf = Pot.create!(spot: spots(:landing_shelf), name: "Spider Plant",
+                        dry_below: 20, wet_above: 80, check_interval_days: 7)
+    corner = Pot.create!(spot: spots(:landing_corner), name: "Spider Plant",
+                         dry_below: 20, wet_above: 80, check_interval_days: 7)
+
+    duplicates = Pot.duplicated_names
+    assert_equal "Spider Plant (Shelf)", shelf.display_name(duplicates)
+    assert_equal "Spider Plant (Far Corner)", corner.display_name(duplicates)
+  end
+
   test "spoken phrasing names the area when it holds one spot" do
     assert_equal "Sunroom Big Fern", @fern.spoken_name
     assert_equal "Put the sensor in the Sunroom Big Fern.", @fern.probe_prompt
