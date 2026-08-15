@@ -226,7 +226,21 @@ class ApiTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "a spot can be moved to another area, taking its pots with it" do
+    spot = spots(:landing_corner)
+    pot = Pot.create!(spot: spot, name: "Travelling Pot",
+                      dry_below: 20, wet_above: 80, check_interval_days: 7)
+
+    patch spot_path(spot, format: :json),
+          params: { spot: { area_id: areas(:cellar).id } }, as: :json
+
+    assert_response :success
+    assert_equal "Cellar", response.parsed_body.dig("area", "name")
+    assert_equal areas(:cellar), pot.reload.area
+  end
+
   private
+
 
   def with_forgery_protection
     original = ActionController::Base.allow_forgery_protection

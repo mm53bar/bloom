@@ -64,9 +64,12 @@ class SpotsController < ApplicationController
     end
   end
 
+  # area_id is permitted so a spot can move between areas. Rooms get reorganised,
+  # and without this the only way to correct a misfiled spot is to delete it — which
+  # cascades to its pots and their entire history.
   def spot_params
     params.expect(spot: [
-      :name, :position, :natural_light, :exposure, :grow_light_entity_id, :notes
+      :area_id, :name, :position, :natural_light, :exposure, :grow_light_entity_id, :notes
     ])
   end
 end
