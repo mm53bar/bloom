@@ -97,6 +97,21 @@ class Pot < ApplicationRecord
 
   def growing_season? = GROWING_SEASON_MONTHS.cover?(Date.current.month)
 
+  # Plants asking for more light than this pot's spot provides.
+  #
+  # Deliberately separate from #status: that reports a chore ("needs water"), and
+  # this reports a condition. A chore is done and gone; a mismatch stays true until
+  # the plant or the light moves, so mixing them into one badge would make an
+  # unfixable problem nag like an unfinished task.
+  def underlit_plants = plants.reject(&:light_satisfied?)
+
+  def light_mismatch? = underlit_plants.any?
+
+  # The worst case in the pot, so one badge can speak for a shared container.
+  def light_severity
+    underlit_plants.map(&:light_severity).include?(:poor) ? :poor : underlit_plants.any? ? :marginal : nil
+  end
+
   # What to say when standing in front of this pot with a probe in hand.
   def status
     return "too wet" if too_wet?
@@ -106,13 +121,40 @@ class Pot < ApplicationRecord
     "fine"
   end
 
+  # Names are deliberately short — "Snake Plant", not "TV Room Snake Plant" —
+  # because the area and spot already say where a pot is wherever it's listed
+  # under them. That leaves duplicates across the house, so anywhere a pot appears
+  # outside its grouping it gets qualified by area, and only then.
+  #
+  # Pass in the set once when rendering a list; the default is a convenience for
+  # single-pot callers, not something to use in a loop.
+  def self.duplicated_names
+    group(:name).having("COUNT(*) > 1").pluck(:name).to_set
+  end
+
+  def display_name(duplicates = self.class.duplicated_names)
+    duplicates.include?(name) ? "#{name} (#{area.name})" : name
+  end
+
+  # Spoken phrasing always names the place, ambiguous or not: this is said while
+  # walking towards the plant, so "the TV Room Snake Plant" is an instruction and
+  # "the Snake Plant" is a riddle.
+  #
+  # Place first, which avoids picking a preposition — "on the Buffet" and "in the
+  # Kitchen" and "on the Deck" all disagree — and happens to reconstruct exactly
+  # the qualified names these pots used to be stored under.
+  def spoken_name
+    qualifier = area.single_spot? ? area.name : spot.name
+    "#{qualifier} #{name}"
+  end
+
   # The app owns the phrasing, so a voice assistant doesn't have to know that
   # semi-hydro is checked differently from soil.
   def probe_prompt
     if semi_hydro?
-      "Check the reservoir on the #{name}."
+      "Check the reservoir on the #{spoken_name}."
     else
-      "Put the sensor in the #{name}."
+      "Put the sensor in the #{spoken_name}."
     end
   end
 
@@ -120,7 +162,7 @@ class Pot < ApplicationRecord
   # matches what the existing voice automation already speaks, so moving the
   # thresholds in here changes nothing a listener would notice.
   def spoken_verdict
-    return "I have no reading for the #{name} yet." if latest_reading.blank?
+    return "I have no reading for the #{spoken_name} yet." if latest_reading.blank?
 
     percent = latest_reading.value.to_i
 
@@ -131,9 +173,9 @@ class Pot < ApplicationRecord
       end
 
     if semi_hydro?
-      "The #{name} reads #{percent} percent, and on its refill schedule #{advice}."
+      "The #{spoken_name} reads #{percent} percent, and on its refill schedule #{advice}."
     else
-      "The #{name} is at #{percent} percent, #{advice}."
+      "The #{spoken_name} is at #{percent} percent, #{advice}."
     end
   end
 

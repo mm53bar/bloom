@@ -42,6 +42,17 @@ class Plant < ApplicationRecord
     nil
   end
 
+  # How badly the spot misses what the plant asks for. One step is a compromise
+  # worth noting; two or more is a plant in the wrong place, and no watering
+  # schedule fixes it.
+  def light_severity
+    case light_shortfall
+    when 0 then nil
+    when 1 then :marginal
+    else :poor
+    end
+  end
+
   def light_shortfall
     return 0 if light_satisfied?
 

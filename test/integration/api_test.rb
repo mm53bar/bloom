@@ -17,7 +17,7 @@ class ApiTest < ActionDispatch::IntegrationTest
     fern = body["pots"].first
     assert_equal "Sunroom", fern["area"]
     assert_equal "Sunroom", fern["spot"]   # single-spot area reads as just the area
-    assert_equal "Put the sensor in the Big Fern.", fern["prompt"]
+    assert_equal "Put the sensor in the Sunroom Big Fern.", fern["prompt"]
     assert_equal [ "the big fern", "sunroom fern" ], fern["aliases"]
     assert_equal 30, fern["dry_below"]
     assert_includes fern["plants"], "Boston Fern"
@@ -29,7 +29,8 @@ class ApiTest < ActionDispatch::IntegrationTest
 
     pothos = response.parsed_body["pots"].find { |p| p["name"] == "Clay Ball Pothos" }
 
-    assert_equal "Check the reservoir on the Clay Ball Pothos.", pothos["prompt"]
+    # Landing has two spots, so the spot names it rather than the area.
+    assert_equal "Check the reservoir on the Shelf Clay Ball Pothos.", pothos["prompt"]
   end
 
   test "posting a reading records it and returns the verdict already phrased" do
@@ -45,7 +46,7 @@ class ApiTest < ActionDispatch::IntegrationTest
 
     assert_equal 12.0, body["value"]
     assert_equal "zigbee", body["source"]
-    assert_equal "The Big Fern is at 12 percent, it needs water.", body["verdict"]
+    assert_equal "The Sunroom Big Fern is at 12 percent, it needs water.", body["verdict"]
     assert_equal "needs water", body.dig("pot", "status")
     assert body.dig("pot", "needs_water")
   end

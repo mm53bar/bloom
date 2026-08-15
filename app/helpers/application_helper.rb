@@ -27,6 +27,21 @@ module ApplicationHelper
     spot.full_name
   end
 
+  # A condition, not a chore — styled apart from the watering status badge on
+  # purpose, since this one stays true until something is physically moved.
+  CONDITION_STYLES = {
+    marginal: "border-amber-300 bg-amber-50 text-amber-900",
+    poor: "border-red-300 bg-red-50 text-red-900"
+  }.freeze
+
+  def condition_badge(severity, text: nil)
+    return if severity.blank?
+
+    label = text || (severity == :poor ? "needs attention" : "wants more light")
+    tag.span label,
+      class: "inline-block rounded-full border px-2.5 py-0.5 text-xs font-medium #{CONDITION_STYLES.fetch(severity)}"
+  end
+
   def light_badge(level)
     tag.span level.humanize,
       class: "inline-block rounded border border-stone-300 bg-white px-2 py-0.5 text-xs text-stone-600"

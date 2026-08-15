@@ -11,6 +11,7 @@
     <h1 class="mt-1 text-2xl font-semibold tracking-tight text-stone-900"><%= @pot.name %></h1>
     <p class="mt-2 flex flex-wrap items-center gap-2 text-sm text-stone-500">
       <%= status_badge @pot.status %>
+      <%= condition_badge @pot.light_severity %>
       <span><%= medium_label @pot.medium %></span>
       <% if @pot.voice_aliases.any? %>
         <span class="text-stone-400">also called <%= @pot.voice_alias_list %></span>
@@ -24,6 +25,25 @@
     <%= link_to "Edit", edit_pot_path(@pot), class: button_classes(:secondary) %>
   </div>
 </div>
+
+<% if @pot.light_mismatch? %>
+  <div class="mb-6 rounded-lg border <%= @pot.light_severity == :poor ? "border-red-300 bg-red-50" : "border-amber-300 bg-amber-50" %> p-4">
+    <p class="text-sm font-medium <%= @pot.light_severity == :poor ? "text-red-900" : "text-amber-900" %>">
+      <%= @pot.light_severity == :poor ? "This pot is in the wrong place for what's in it." : "This pot is a compromise for what's in it." %>
+    </p>
+    <ul class="mt-2 space-y-1 text-sm <%= @pot.light_severity == :poor ? "text-red-800" : "text-amber-800" %>">
+      <% @pot.underlit_plants.each do |plant| %>
+        <li>
+          <strong><%= plant.name %></strong> wants <%= plant.light_requirement %> light;
+          <%= spot_label @pot.spot %> gives <%= @pot.spot.effective_light %><%= " (#{@pot.spot.exposure})" if @pot.spot.exposure.present? %>.
+        </li>
+      <% end %>
+    </ul>
+    <p class="mt-2 text-xs <%= @pot.light_severity == :poor ? "text-red-700" : "text-amber-700" %>">
+      Moving it, or adding a grow light to this spot, does more here than any watering schedule.
+    </p>
+  </div>
+<% end %>
 
 <div class="grid gap-6 md:grid-cols-2">
   <section class="rounded-lg border border-stone-200 bg-white p-5">

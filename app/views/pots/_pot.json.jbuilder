@@ -16,8 +16,16 @@ json.area do
   json.name pot.area.name
 end
 
+json.display_name pot.display_name
+json.spoken_name pot.spoken_name
+
 # Verdicts, so a caller never needs its own copy of the thresholds.
 json.status pot.status
+
+# A condition rather than a chore: true until the plant or the light moves, so
+# deliberately not folded into `status`.
+json.light_mismatch pot.light_mismatch?
+json.light_severity pot.light_severity
 json.needs_water pot.needs_water?
 json.too_wet pot.too_wet?
 json.needs_check pot.needs_check?

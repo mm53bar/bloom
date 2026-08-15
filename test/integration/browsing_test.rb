@@ -25,8 +25,8 @@ class BrowsingTest < ActionDispatch::IntegrationTest
     get walk_pots_path
 
     assert_response :success
-    assert_select "p", text: "Put the sensor in the Big Fern."
-    assert_select "p", text: "Check the reservoir on the Clay Ball Pothos."
+    assert_select "p", text: "Put the sensor in the Sunroom Big Fern."
+    assert_select "p", text: "Check the reservoir on the Shelf Clay Ball Pothos."
   end
 
   test "the due page says so when nothing is outstanding" do
@@ -173,8 +173,29 @@ class BrowsingTest < ActionDispatch::IntegrationTest
     end
   end
 
-  private
+  test "a badly mismatched pot is flagged on the list and explained on its page" do
+    get pots_path
+    assert_response :success
+    assert_select "span", text: "needs attention"
 
+    get pot_path(pots(:orphan))
+    assert_response :success
+    assert_select "p", text: /wrong place for what's in it/
+    assert_select "li", text: /Sad Succulent.*wants bright light/m
+  end
+
+  test "the mismatch badge is separate from the watering status" do
+    read = pots(:orphan).moisture_readings.create!(value: 60, read_at: 1.hour.ago, source: "test")
+
+    get pots_path
+
+    assert_response :success
+    # Watering is fine; the condition is not. Both must be visible at once.
+    assert_select "span", text: "fine"
+    assert_select "span", text: "needs attention"
+  end
+
+  private
   def with_revision(sha, short)
     original = [ Rails.configuration.x.git_sha, Rails.configuration.x.git_sha_short ]
     Rails.configuration.x.git_sha = sha

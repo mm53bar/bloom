@@ -200,8 +200,76 @@ class PotTest < ActiveSupport::TestCase
     assert_not @fern.valid?
   end
 
-  private
+  # --- naming ------------------------------------------------------------------
 
+  test "a name unique across the house needs no qualifier" do
+    assert_equal "Big Fern", @fern.display_name
+  end
+
+  test "a name shared by two pots is qualified by area" do
+    # Two "Twin" pots in different areas — the exact situation trimming the old
+    # "TV Room Snake Plant" style names creates.
+    twin_a = Pot.create!(spot: spots(:sunroom_sill), name: "Twin",
+                         dry_below: 20, wet_above: 80, check_interval_days: 7)
+    twin_b = Pot.create!(spot: spots(:cellar_bench), name: "Twin",
+                         dry_below: 20, wet_above: 80, check_interval_days: 7)
+
+    duplicates = Pot.duplicated_names
+    assert_equal "Twin (Sunroom)", twin_a.display_name(duplicates)
+    assert_equal "Twin (Cellar)", twin_b.display_name(duplicates)
+    assert_equal "Big Fern", @fern.display_name(duplicates)
+  end
+
+  test "spoken phrasing names the area when it holds one spot" do
+    assert_equal "Sunroom Big Fern", @fern.spoken_name
+    assert_equal "Put the sensor in the Sunroom Big Fern.", @fern.probe_prompt
+  end
+
+  test "spoken phrasing names the spot when the area is subdivided" do
+    # Otherwise three "Spider Plant" pots in one room are indistinguishable aloud.
+    assert_equal "Shelf Clay Ball Pothos", @pothos.spoken_name
+  end
+
+  # --- conditions ---------------------------------------------------------------
+
+  test "a pot whose plants all suit their spot reports no mismatch" do
+    assert_not pots(:succulent_bowl).light_mismatch?
+    assert_nil pots(:succulent_bowl).light_severity
+  end
+
+  test "one step short of the light asked for is marginal" do
+    pot = pots(:pothos)   # Landing shelf, effectively medium
+    pot.plants.create!(name: "Fussy", light_requirement: "bright")
+
+    assert pot.reload.light_mismatch?
+    assert_equal :marginal, pot.light_severity
+  end
+
+  test "two steps short is a plant in the wrong place" do
+    assert_equal :poor, pots(:orphan).light_severity
+    assert_equal [ "Sad Succulent" ], pots(:orphan).underlit_plants.map(&:name)
+  end
+
+  test "the worst plant in a shared container speaks for the pot" do
+    bowl = pots(:succulent_bowl)          # Sunroom sill, bright
+    bowl.plants.create!(name: "Mild", light_requirement: "direct")   # one step short
+
+    assert_equal :marginal, bowl.reload.light_severity
+
+    bowl.spot.update!(natural_light: "low")   # now everything is badly short
+    assert_equal :poor, bowl.reload.light_severity
+  end
+
+  test "a condition is not a chore" do
+    # A mismatch must never leak into #status: watering gets done and goes away,
+    # a plant in the wrong place stays wrong until something moves.
+    read(pots(:orphan), 60, at: 1.hour.ago)
+
+    assert_equal "fine", pots(:orphan).reload.status
+    assert pots(:orphan).light_mismatch?
+  end
+
+  private
   def read(pot, value, at:)
     pot.moisture_readings.create!(value: value, read_at: at, source: "test")
   end
