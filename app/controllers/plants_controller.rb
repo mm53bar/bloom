@@ -68,7 +68,8 @@ class PlantsController < ApplicationController
 
   def plant_params
     params.expect(plant: [
-      :pot_id, :name, :species, :light_requirement, :reference_url, :acquired_on, :notes
+      :pot_id, :name, :species, :light_requirement, :dli_minimum, :reference_url,
+      :acquired_on, :notes
     ])
   end
 end

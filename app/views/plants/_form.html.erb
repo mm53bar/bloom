@@ -38,6 +38,16 @@
     </div>
 
     <div>
+      <%= form.label :dli_minimum, "Minimum DLI (mol/m²/day)", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.number_field :dli_minimum, step: 0.1, min: 0,
+            class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+      <p class="mt-1 text-xs text-stone-500">
+        Optional. Overrides the default for the requirement above — the minimum this
+        plant tolerates, not what it would ideally like.
+      </p>
+    </div>
+
+    <div>
       <%= form.label :acquired_on, class: "block text-sm font-medium text-stone-700" %>
       <%= form.date_field :acquired_on, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
     </div>

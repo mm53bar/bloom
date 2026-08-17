@@ -8,6 +8,13 @@ class Spot < ApplicationRecord
   # Ordered dimmest to brightest — index comparisons below rely on that order.
   LIGHT_LEVELS = %w[ none low medium bright direct ].freeze
 
+  # What each word is taken to mean in mol/m²/day, so an unmeasured spot can still
+  # be compared against a plant's requirement. Estimates standing in for a
+  # measurement; a real figure in measured_dli always wins.
+  IMPLIED_DLI = {
+    "none" => 0.2, "low" => 1.0, "medium" => 3.0, "bright" => 6.0, "direct" => 12.0
+  }.freeze
+
   belongs_to :area
   has_many :pots, -> { order(:position, :name) }, dependent: :destroy
   has_many :plants, through: :pots
@@ -16,6 +23,8 @@ class Spot < ApplicationRecord
             uniqueness: { scope: :area_id, case_sensitive: false }
   validates :natural_light, inclusion: { in: LIGHT_LEVELS }
   validates :position, numericality: { only_integer: true }
+  validates :measured_dli, :measured_ppfd, :light_hours,
+            numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   scope :in_walk_order, -> {
     joins(:area).order("areas.position", "areas.name", :position, :name)
@@ -31,6 +40,13 @@ class Spot < ApplicationRecord
     step += 1 if grow_light?
     LIGHT_LEVELS[step.clamp(0, LIGHT_LEVELS.length - 1)]
   end
+
+  def measured? = measured_dli.present?
+
+  # The figure every light decision is made from. A measurement where there is one,
+  # otherwise whatever the qualitative word implies — so an unmetered spot still
+  # gets a sensible answer rather than no answer.
+  def effective_dli = measured_dli || IMPLIED_DLI.fetch(effective_light, 0.2)
 
   # How to refer to this spot in a sentence. An area with one spot is just the
   # area — "the Kitchen", not "the Kitchen, Kitchen".

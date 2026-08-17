@@ -1,6 +1,14 @@
 class Plant < ApplicationRecord
-  # A plant can want anything a spot can offer, except "none".
-  LIGHT_REQUIREMENTS = (Spot::LIGHT_LEVELS - %w[ none ]).freeze
+  # Every level a spot can offer, "none" included. Excluding it was a mistake:
+  # snake plants, ZZ plants and pothos tolerate deep shade indefinitely, and
+  # without this they get flagged for living somewhere they are perfectly content.
+  LIGHT_REQUIREMENTS = Spot::LIGHT_LEVELS
+
+  # The DLI each requirement implies, in mol/m²/day — the *minimum* the plant needs
+  # rather than what it would ideally enjoy. dli_minimum overrides it per plant.
+  REQUIREMENT_DLI = {
+    "none" => 0.3, "low" => 1.5, "medium" => 3.0, "bright" => 6.0, "direct" => 10.0
+  }.freeze
 
   belongs_to :pot
   has_one :spot, through: :pot
@@ -22,13 +30,16 @@ class Plant < ApplicationRecord
 
   scope :by_name, -> { order(:name) }
 
-  # Does this plant's spot provide at least the light it asks for? Comparing
-  # against effective_light means a grow light can rescue an otherwise dim
-  # corner — which is the actionable version of the question.
-  def light_satisfied?
-    Spot::LIGHT_LEVELS.index(spot.effective_light) >=
-      Spot::LIGHT_LEVELS.index(light_requirement)
-  end
+  # The minimum daily light this plant needs: an explicit figure if given,
+  # otherwise the default implied by its qualitative requirement.
+  def dli_required = dli_minimum || REQUIREMENT_DLI.fetch(light_requirement, 1.5)
+
+  # Both sides are in mol/m²/day now, so a measured spot and an unmeasured one are
+  # answered the same way and no counting of rungs is involved.
+  def light_satisfied? = spot.effective_dli >= dli_required
+
+  # How far short, as a fraction of what is needed.
+  def light_ratio = (spot.effective_dli / dli_required).to_f
 
   # Belt and braces: the validation above covers anything saved through the app,
   # and this re-checks at render time so a row written by some future path — a
@@ -42,21 +53,19 @@ class Plant < ApplicationRecord
     nil
   end
 
-  # How badly the spot misses what the plant asks for. One step is a compromise
-  # worth noting; two or more is a plant in the wrong place, and no watering
-  # schedule fixes it.
+  # Below half of what it needs is a plant in the wrong place; between half and all
+  # of it is a compromise worth noting.
   def light_severity
-    case light_shortfall
-    when 0 then nil
-    when 1 then :marginal
-    else :poor
-    end
+    return nil if light_satisfied?
+
+    light_ratio >= 0.5 ? :marginal : :poor
   end
 
-  def light_shortfall
-    return 0 if light_satisfied?
+  # The shortfall in mol/m²/day — the number that says whether a different spot or
+  # a better lamp would actually close the gap.
+  def light_deficit
+    return 0.0 if light_satisfied?
 
-    Spot::LIGHT_LEVELS.index(light_requirement) -
-      Spot::LIGHT_LEVELS.index(spot.effective_light)
+    (dli_required - spot.effective_dli).round(2)
   end
 end

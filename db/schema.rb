@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_14_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_17_200000) do
   create_table "areas", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ha_area"
@@ -48,6 +48,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_180000) do
   create_table "plants", force: :cascade do |t|
     t.date "acquired_on"
     t.datetime "created_at", null: false
+    t.decimal "dli_minimum", precision: 6, scale: 2
     t.string "light_requirement", default: "medium", null: false
     t.string "name", null: false
     t.text "notes"
@@ -82,6 +83,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_180000) do
     t.datetime "created_at", null: false
     t.string "exposure"
     t.string "grow_light_entity_id"
+    t.decimal "light_hours", precision: 4, scale: 1
+    t.date "measured_at"
+    t.decimal "measured_dli", precision: 6, scale: 2
+    t.decimal "measured_ppfd", precision: 8, scale: 1
     t.string "name", null: false
     t.string "natural_light", default: "medium", null: false
     t.text "notes"

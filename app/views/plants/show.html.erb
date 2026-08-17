@@ -18,14 +18,22 @@
 <div class="rounded-lg border border-stone-200 bg-white p-5">
   <dl class="space-y-2 text-sm">
     <div class="flex justify-between gap-4">
-      <dt class="text-stone-500">Wants</dt>
-      <dd class="text-stone-800"><%= @plant.light_requirement.humanize %> light</dd>
+      <dt class="text-stone-500">Needs</dt>
+      <dd class="text-stone-800">
+        <%= @plant.light_requirement.humanize %> light
+        &middot; <%= number_with_precision @plant.dli_required, precision: 1 %> mol/m²/day
+      </dd>
     </div>
     <div class="flex justify-between gap-4">
       <dt class="text-stone-500">Gets</dt>
       <dd class="<%= @plant.light_satisfied? ? "text-stone-800" : "text-amber-800" %>">
-        <%= @plant.spot.effective_light.humanize %>
-        <%= "(short by #{@plant.light_shortfall})" unless @plant.light_satisfied? %>
+        <%= number_with_precision @plant.spot.effective_dli, precision: 1 %> mol/m²/day
+        <% if @plant.spot.measured? %>
+          <span class="text-xs text-stone-400">measured</span>
+        <% else %>
+          <span class="text-xs text-stone-400">estimated from "<%= @plant.spot.effective_light %>"</span>
+        <% end %>
+        <%= "— short by #{number_with_precision @plant.light_deficit, precision: 1}" unless @plant.light_satisfied? %>
       </dd>
     </div>
     <% if @plant.acquired_on %>

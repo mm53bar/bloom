@@ -36,6 +36,33 @@
       <p class="mt-1 text-xs text-stone-500">Optional. Recording one counts this spot a step brighter.</p>
     </div>
 
+    <div>
+      <%= form.label :measured_dli, "Measured DLI (mol/m²/day)", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.number_field :measured_dli, step: 0.01, min: 0,
+            class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+      <p class="mt-1 text-xs text-stone-500">
+        Overrides the estimate implied by the light level above. PPFD × hours × 0.0036,
+        or an integrated day from a logging sensor.
+      </p>
+    </div>
+
+    <div>
+      <%= form.label :measured_ppfd, "Measured PPFD (µmol/m²/s)", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.number_field :measured_ppfd, step: 0.1, min: 0,
+            class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :light_hours, "Hours of light per day", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.number_field :light_hours, step: 0.1, min: 0,
+            class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
+    <div>
+      <%= form.label :measured_at, "Measured on", class: "block text-sm font-medium text-stone-700" %>
+      <%= form.date_field :measured_at, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
+    </div>
+
     <div class="sm:col-span-2">
       <%= form.label :exposure, class: "block text-sm font-medium text-stone-700" %>
       <%= form.text_field :exposure, placeholder: "north wall, opposite the south window",

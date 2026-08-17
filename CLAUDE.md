@@ -14,6 +14,13 @@ round the house with one. This file is standing rules, not a spec — read the c
   Real data is loaded over the JSON API from a file kept outside this repo. See
   `docs/adr/20260814-no-personal-data-in-this-repo.md`. This covers git history too, so it
   holds from the first commit rather than from whenever the repo is made public.
+- **Light resolves to DLI, in mol/m²/day.** `Spot#effective_dli` returns a measurement when
+  there is one and otherwise the figure its qualitative word implies; `Plant#dli_required` is
+  the **minimum the plant tolerates**, not what it would enjoy. The five-word ladder is the
+  entry point for describing an unmetered spot, not the thing that decides anything — two
+  shelves it called identical measured 1.5 and 11.3. See `docs/adr/20260817-light-as-dli.md`.
+  Read requirements as minimums: against absolute figures, "what it would enjoy" flagged two
+  thirds of a real collection and the badge stopped meaning anything.
 - **Four levels, each owning one thing.** `Area` (a part of the house) contains `Spot`s (where
   a pot sits) which hold `Pot`s which hold `Plant`s. **Light belongs to the Spot and nowhere
   else** — a shelf in a window and a shelf across the same room are not alike, and a second
