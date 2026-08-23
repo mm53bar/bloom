@@ -29,7 +29,7 @@ Rails.application.configure do
   # `assume_ssl` tells Rails that every request arrived over TLS regardless of
   # what actually happened. That is right for an app always fronted by a
   # TLS-terminating proxy, and wrong here: Bloom is reached directly over plain
-  # HTTP on the local network by machine callers, and `walk.json` hands those
+  # HTTP on the local network by machine callers, and `pots.json` hands those
   # callers a URL to POST readings back to. With `assume_ssl` on, that URL comes
   # out as `https://host:3214/...` — an address nothing is listening on — so the
   # integration breaks on its first write.

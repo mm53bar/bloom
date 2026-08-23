@@ -1,5 +1,8 @@
 # 20260814 — Areas contain Spots; light belongs to the Spot
 
+> The two-level split and the light rule below still hold. The walk-position ordering this
+> ADR describes does not — see `docs/adr/20260823-drop-walk-position.md`.
+
 ## Context
 
 The first version of this app had a single `Location`, and pots belonged to it

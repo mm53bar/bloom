@@ -11,7 +11,6 @@ fern:
   water_interval_days: 7
   fertilize_interval_days: 30
   check_interval_days: 7
-  position: 1
 
 # The shared-container case: one soil volume, one reading, one watering
 # decision, several plants living in it.
@@ -25,7 +24,6 @@ succulent_bowl:
   wet_above: 95
   water_interval_days: 21
   check_interval_days: 14
-  position: 2
 
 # Semi-hydro: thresholds exist but are not what decides watering.
 pothos:
@@ -38,7 +36,6 @@ pothos:
   water_interval_days: 14
   fertilize_interval_days: 30
   check_interval_days: 14
-  position: 1
 
 # Deliberately under-lit: a bright-light plant parked in a dark cellar, so the
 # light-mismatch report has something to find.
@@ -50,4 +47,3 @@ orphan:
   dry_below: 25
   wet_above: 90
   check_interval_days: 7
-  position: 1

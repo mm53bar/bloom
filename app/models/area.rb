@@ -9,19 +9,18 @@
 # and Home Assistant calls this same level an area, which makes `ha_area` a
 # pairing rather than a translation.
 class Area < ApplicationRecord
-  has_many :spots, -> { order(:position, :name) }, dependent: :destroy
+  has_many :spots, -> { order(:name) }, dependent: :destroy
   has_many :pots, through: :spots
   has_many :plants, through: :pots
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }
-  validates :position, numericality: { only_integer: true }
 
   # Most areas contain exactly one spot, and making someone name it would be
   # busywork. One is created automatically; a second is what you add when the
   # light genuinely differs.
   after_create :create_default_spot
 
-  scope :in_walk_order, -> { order(:position, :name) }
+  scope :ordered, -> { order(:name) }
 
   # True when this area has never been subdivided, in which case the UI can talk
   # about the area alone and never mention spots.

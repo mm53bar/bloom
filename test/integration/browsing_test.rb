@@ -3,7 +3,7 @@ require "test_helper"
 # Rack integration tests rather than browser system tests — see
 # docs/adr/20260814-integration-tests-over-system-tests.md.
 class BrowsingTest < ActionDispatch::IntegrationTest
-  test "the pot list groups pots under their location in walk order" do
+  test "the pot list groups pots under their location" do
     get root_path
 
     assert_response :success
@@ -21,14 +21,6 @@ class BrowsingTest < ActionDispatch::IntegrationTest
     assert_select "p", text: /Nothing here yet/
   end
 
-  test "the walk page lists each stop with the phrasing to use" do
-    get walk_pots_path
-
-    assert_response :success
-    assert_select "p", text: "Put the sensor in the Sunroom Big Fern."
-    assert_select "p", text: "Check the reservoir on the Shelf Clay Ball Pothos."
-  end
-
   test "the due page says so when nothing is outstanding" do
     Pot.find_each do |pot|
       pot.moisture_readings.create!(value: 60, read_at: 1.hour.ago, source: "test")
@@ -44,7 +36,7 @@ class BrowsingTest < ActionDispatch::IntegrationTest
 
   test "a pot page shows its plants, readings and history" do
     pot = pots(:succulent_bowl)
-    pot.moisture_readings.create!(value: 33, read_at: 1.day.ago, source: "walk")
+    pot.moisture_readings.create!(value: 33, read_at: 1.day.ago, source: "manual")
     pot.care_events.create!(kind: "repotted", occurred_on: 2.months.ago)
 
     get pot_path(pot)
@@ -72,7 +64,7 @@ class BrowsingTest < ActionDispatch::IntegrationTest
     assert_select "a", text: "Sad Succulent"
   end
 
-  test "recording a reading from the walk page reports the verdict back" do
+  test "recording a reading reports the verdict back" do
     pot = pots(:fern)
 
     post pot_moisture_readings_path(pot), params: { moisture_reading: { value: 8 } }

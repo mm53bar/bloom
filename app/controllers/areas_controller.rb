@@ -2,12 +2,12 @@ class AreasController < ApplicationController
   before_action :set_area, only: %i[ show edit update destroy ]
 
   def index
-    @areas = Area.in_walk_order.includes(spots: { pots: :plants })
+    @areas = Area.ordered.includes(spots: { pots: :plants })
   end
 
   def show
     @spots = @area.spots.includes(pots: :plants)
-    @pots = Pot.with_care_data.where(spot: @area.spots).in_walk_order
+    @pots = Pot.with_care_data.where(spot: @area.spots).ordered
   end
 
   def new
@@ -64,6 +64,6 @@ class AreasController < ApplicationController
   end
 
   def area_params
-    params.expect(area: [ :name, :position, :ha_area, :notes ])
+    params.expect(area: [ :name, :ha_area, :notes ])
   end
 end

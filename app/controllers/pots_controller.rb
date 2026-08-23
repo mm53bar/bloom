@@ -5,13 +5,6 @@ class PotsController < ApplicationController
     @pots = roster
   end
 
-  # The ordered route through the house. Everything a voice assistant needs to
-  # run a round lives in this one response — names to listen for, phrasing to
-  # speak, and the thresholds to judge the reading against.
-  def walk
-    @pots = roster
-  end
-
   def due
     pots = roster
     @needs_water = pots.select(&:needs_water?)
@@ -26,7 +19,7 @@ class PotsController < ApplicationController
   end
 
   def new
-    @pot = Pot.new(spot: Spot.in_walk_order.first)
+    @pot = Pot.new(spot: Spot.ordered.first)
   end
 
   def edit
@@ -70,7 +63,7 @@ class PotsController < ApplicationController
 
   private
 
-  def roster = Pot.with_care_data.in_walk_order.to_a
+  def roster = Pot.with_care_data.ordered.to_a
 
   def record_care(kind)
     @pot.care_events.create!(
@@ -102,7 +95,7 @@ class PotsController < ApplicationController
     params.expect(pot: [
       :spot_id, :name, :medium, :dry_below, :wet_above,
       :water_interval_days, :fertilize_interval_days, :check_interval_days,
-      :position, :potted_on, :notes, :voice_alias_list, :ha_tag_id, { voice_aliases: [] }
+      :potted_on, :notes, :voice_alias_list, :ha_tag_id, { voice_aliases: [] }
     ])
   end
 end

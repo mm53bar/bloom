@@ -4,38 +4,38 @@ require "test_helper"
 # Breaking anything asserted here means editing automations on the other side,
 # so these are deliberately specific about shape.
 class ApiTest < ActionDispatch::IntegrationTest
-  test "the walk returns every pot in room order with what's needed to run it" do
-    get walk_pots_path(format: :json)
+  test "the pots index returns every pot with what's needed to run a check" do
+    get pots_path(format: :json)
 
     assert_response :success
     body = response.parsed_body
 
     assert_equal 4, body["pot_count"]
-    assert_equal [ "Big Fern", "Succulent Bowl", "Clay Ball Pothos", "Forgotten Pot" ],
+    assert_equal [ "Forgotten Pot", "Clay Ball Pothos", "Big Fern", "Succulent Bowl" ],
                  body["pots"].map { |p| p["name"] }
 
-    fern = body["pots"].first
-    assert_equal "Sunroom", fern["area"]
-    assert_equal "Sunroom", fern["spot"]   # single-spot area reads as just the area
+    fern = body["pots"].find { |p| p["name"] == "Big Fern" }
+    assert_equal "Sunroom", fern.dig("area", "name")
+    assert_equal "Sunroom", fern.dig("spot", "full_name")   # single-spot area reads as just the area
     assert_equal "Put the sensor in the Sunroom Big Fern.", fern["prompt"]
     assert_equal [ "the big fern", "sunroom fern" ], fern["aliases"]
     assert_equal 30, fern["dry_below"]
-    assert_includes fern["plants"], "Boston Fern"
+    assert_includes fern["plants"].map { |p| p["name"] }, "Boston Fern"
     assert_match %r{/pots/[a-z]+-[a-z]+/moisture_readings\.json\z}, fern["record_reading_url"]
     assert_nil fern["ha_tag_id"]
   end
 
-  test "a pot's NFC tag id comes back in the walk, once set" do
+  test "a pot's NFC tag id comes back in the pots index, once set" do
     pots(:fern).update!(ha_tag_id: "abc123")
 
-    get walk_pots_path(format: :json)
+    get pots_path(format: :json)
 
     fern = response.parsed_body["pots"].find { |p| p["name"] == "Big Fern" }
     assert_equal "abc123", fern["ha_tag_id"]
   end
 
-  test "the walk speaks about the reservoir for a semi-hydro pot" do
-    get walk_pots_path(format: :json)
+  test "the pots index speaks about the reservoir for a semi-hydro pot" do
+    get pots_path(format: :json)
 
     pothos = response.parsed_body["pots"].find { |p| p["name"] == "Clay Ball Pothos" }
 
@@ -157,7 +157,7 @@ class ApiTest < ActionDispatch::IntegrationTest
     # room never has to know spots exist.
     assert_difference [ -> { Area.count }, -> { Spot.count } ], 1 do
       post areas_path(format: :json),
-           params: { area: { name: "Porch", position: 9 } }, as: :json
+           params: { area: { name: "Porch" } }, as: :json
     end
     assert_response :created
     assert response.parsed_body["single_spot"]

@@ -4,30 +4,30 @@ namespace :bloom do
   # An area is a part of the house; a spot is where in it a pot actually sits.
   # The Landing has two spots on purpose: same room, very different light.
   DEMO_AREAS = [
-    { name: "Sunroom", position: 1, spots: [
-      { name: "Window Sill", position: 1, natural_light: "bright",
+    { name: "Sunroom", spots: [
+      { name: "Window Sill", natural_light: "bright",
         exposure: "South-facing glass on three sides" }
     ] },
-    { name: "Landing", position: 2, spots: [
-      { name: "Shelf", position: 1, natural_light: "low",
+    { name: "Landing", spots: [
+      { name: "Shelf", natural_light: "low",
         exposure: "No window of its own; borrowed light from the stairwell",
         grow_light_entity_id: "switch.example_grow_light" },
-      { name: "Far Corner", position: 2, natural_light: "low",
+      { name: "Far Corner", natural_light: "low",
         exposure: "Across the landing from the shelf, nothing over it" }
     ] },
-    { name: "Study", position: 3, spots: [
-      { name: "Desk", position: 1, natural_light: "medium",
+    { name: "Study", spots: [
+      { name: "Desk", natural_light: "medium",
         exposure: "East window, desk height" }
     ] }
   ].freeze
 
   DEMO_POTS = [
-    { spot: [ "Sunroom", "Window Sill" ], name: "Big Fern", position: 1, medium: "soil",
+    { spot: [ "Sunroom", "Window Sill" ], name: "Big Fern", medium: "soil",
       voice_aliases: [ "the big fern" ], dry_below: 30, wet_above: 80,
       water_interval_days: 7, fertilize_interval_days: 30, check_interval_days: 7,
       plants: [ { name: "Boston Fern", species: "Nephrolepis exaltata", light_requirement: "medium" } ] },
 
-    { spot: [ "Sunroom", "Window Sill" ], name: "Succulent Bowl", position: 2, medium: "soil",
+    { spot: [ "Sunroom", "Window Sill" ], name: "Succulent Bowl", medium: "soil",
       voice_aliases: [ "the succulents" ], dry_below: 15, wet_above: 95,
       water_interval_days: 21, check_interval_days: 14,
       plants: [
@@ -35,11 +35,11 @@ namespace :bloom do
         { name: "Echeveria", species: "Echeveria elegans", light_requirement: "bright" }
       ] },
 
-    { spot: [ "Landing", "Shelf" ], name: "Clay Ball Pothos", position: 1, medium: "semi_hydro",
+    { spot: [ "Landing", "Shelf" ], name: "Clay Ball Pothos", medium: "semi_hydro",
       dry_below: 20, wet_above: 100, water_interval_days: 14, check_interval_days: 14,
       plants: [ { name: "Golden Pothos", species: "Epipremnum aureum", light_requirement: "low" } ] },
 
-    { spot: [ "Study", "Desk" ], name: "Desk Fig", position: 1, medium: "soil",
+    { spot: [ "Study", "Desk" ], name: "Desk Fig", medium: "soil",
       dry_below: 25, wet_above: 85, water_interval_days: 10,
       fertilize_interval_days: 21, check_interval_days: 7,
       plants: [ { name: "Fiddle Leaf Fig", species: "Ficus lyrata", light_requirement: "bright" } ] }
@@ -75,7 +75,7 @@ namespace :bloom do
         pot.plants.find_or_initialize_by(name: plant[:name]).update!(plant)
       end
 
-      # A little history, so the due and walk pages have something to say.
+      # A little history, so the pot list and due page have something to say.
       pot.care_events.find_or_create_by!(kind: "watered", occurred_on: 9.days.ago.to_date)
       pot.moisture_readings.find_or_create_by!(source: "demo") do |reading|
         reading.value = rand(8..70)

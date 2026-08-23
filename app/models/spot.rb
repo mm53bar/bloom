@@ -16,19 +16,16 @@ class Spot < ApplicationRecord
   }.freeze
 
   belongs_to :area
-  has_many :pots, -> { order(:position, :name) }, dependent: :destroy
+  has_many :pots, -> { order(:name) }, dependent: :destroy
   has_many :plants, through: :pots
 
   validates :name, presence: true,
             uniqueness: { scope: :area_id, case_sensitive: false }
   validates :natural_light, inclusion: { in: LIGHT_LEVELS }
-  validates :position, numericality: { only_integer: true }
   validates :measured_dli, :measured_ppfd, :light_hours,
             numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
-  scope :in_walk_order, -> {
-    joins(:area).order("areas.position", "areas.name", :position, :name)
-  }
+  scope :ordered, -> { joins(:area).order("areas.name", :name) }
 
   def grow_light? = grow_light_entity_id.present?
 

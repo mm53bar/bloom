@@ -69,7 +69,7 @@ class SpotsController < ApplicationController
   # cascades to its pots and their entire history.
   def spot_params
     params.expect(spot: [
-      :area_id, :name, :position, :natural_light, :exposure, :grow_light_entity_id,
+      :area_id, :name, :natural_light, :exposure, :grow_light_entity_id,
       :measured_dli, :measured_ppfd, :light_hours, :measured_at, :notes
     ])
   end

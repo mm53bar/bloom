@@ -10,16 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_23_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_23_190000) do
   create_table "areas", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ha_area"
     t.string "name", null: false
     t.text "notes"
-    t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_areas_on_name", unique: true
-    t.index ["position"], name: "index_areas_on_position"
   end
 
   create_table "care_events", force: :cascade do |t|
@@ -68,7 +66,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_23_170000) do
     t.string "medium", default: "soil", null: false
     t.string "name", null: false
     t.text "notes"
-    t.integer "position", default: 0, null: false
     t.date "potted_on"
     t.string "slug", null: false
     t.integer "spot_id", null: false
@@ -78,8 +75,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_23_170000) do
     t.integer "wet_above", default: 100, null: false
     t.index ["ha_tag_id"], name: "index_pots_on_ha_tag_id", unique: true
     t.index ["slug"], name: "index_pots_on_slug", unique: true
-    t.index ["spot_id", "position"], name: "index_pots_on_spot_id_and_position"
     t.index ["spot_id"], name: "index_pots_on_spot_id"
+    t.index ["spot_id"], name: "index_pots_on_spot_id_and_position"
   end
 
   create_table "spots", force: :cascade do |t|
@@ -94,11 +91,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_23_170000) do
     t.string "name", null: false
     t.string "natural_light", default: "medium", null: false
     t.text "notes"
-    t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["area_id", "name"], name: "index_spots_on_area_id_and_name", unique: true
-    t.index ["area_id", "position"], name: "index_spots_on_area_id_and_position"
     t.index ["area_id"], name: "index_spots_on_area_id"
+    t.index ["area_id"], name: "index_spots_on_area_id_and_position"
   end
 
   add_foreign_key "care_events", "pots"

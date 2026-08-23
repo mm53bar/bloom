@@ -7,14 +7,11 @@
 
 sunroom:
   name: Sunroom
-  position: 1
 
 landing:
   name: Landing
-  position: 2
   ha_area: landing
   notes: Two spots, and they are nothing alike.
 
 cellar:
   name: Cellar
-  position: 3

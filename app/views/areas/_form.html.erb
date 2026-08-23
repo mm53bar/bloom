@@ -17,11 +17,6 @@
       <p class="mt-1 text-xs text-stone-500">A part of the house: a room, a deck, a balcony.</p>
     </div>
 
-    <div>
-      <%= form.label :position, "Walk order", class: "block text-sm font-medium text-stone-700" %>
-      <%= form.number_field :position, class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
-    </div>
-
     <div class="sm:col-span-2">
       <%= form.label :ha_area, "Home Assistant area", class: "block text-sm font-medium text-stone-700" %>
       <%= form.text_field :ha_area, placeholder: "living_room",

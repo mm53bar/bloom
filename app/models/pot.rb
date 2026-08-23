@@ -44,9 +44,8 @@ class Pot < ApplicationRecord
             numericality: { greater_than: 0 }, allow_nil: true
   validate :wet_above_exceeds_dry_below
 
-  scope :in_walk_order, -> {
-    joins(spot: :area).order("areas.position", "areas.name", "spots.position", "spots.name",
-                             :position, :name)
+  scope :ordered, -> {
+    joins(spot: :area).order("areas.name", "spots.name", :name)
   }
   scope :with_care_data, -> {
     includes(:plants, :care_events, :moisture_readings, spot: :area)

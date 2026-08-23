@@ -45,8 +45,8 @@ class SpotTest < ActiveSupport::TestCase
     assert_equal "Landing — Far Corner", spots(:landing_corner).full_name
   end
 
-  test "walk order runs area by area, then spot by spot" do
-    assert_equal [ "Sunroom", "Landing — Shelf", "Landing — Far Corner", "Cellar" ],
-                 Spot.in_walk_order.map(&:full_name)
+  test "spots list alphabetically by area, then by name within it" do
+    assert_equal [ "Cellar", "Landing — Far Corner", "Landing — Shelf", "Sunroom" ],
+                 Spot.ordered.map(&:full_name)
   end
 end

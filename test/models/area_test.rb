@@ -23,8 +23,8 @@ class AreaTest < ActiveSupport::TestCase
     assert_not Area.new(name: "sunroom").valid?
   end
 
-  test "walk order follows position" do
-    assert_equal [ "Sunroom", "Landing", "Cellar" ], Area.in_walk_order.map(&:name)
+  test "areas list alphabetically by name" do
+    assert_equal [ "Cellar", "Landing", "Sunroom" ], Area.ordered.map(&:name)
   end
 
   test "destroying an area takes its spots and their pots with it" do

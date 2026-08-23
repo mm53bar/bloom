@@ -25,9 +25,6 @@ Rails.application.routes.draw do
     end
 
     collection do
-      # The ordered route through the house, with the phrasing to speak at each
-      # stop. One request replaces a hardcoded plant list in the automation.
-      get :walk
       # What wants attention right now, and why.
       get :due
     end

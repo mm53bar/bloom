@@ -1,5 +1,8 @@
 # 20260814 — The pot is the unit of care, not the plant
 
+> The unit-of-care decision below still holds. The walk position it lists among Pot's
+> responsibilities does not — see `docs/adr/20260823-drop-walk-position.md`.
+
 ## Context
 
 The obvious primary noun for an app about houseplants is `Plant`. It is the wrong one.

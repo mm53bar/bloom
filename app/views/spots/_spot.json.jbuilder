@@ -1,4 +1,4 @@
-json.extract! spot, :id, :name, :position, :natural_light, :exposure,
+json.extract! spot, :id, :name, :natural_light, :exposure,
               :grow_light_entity_id, :notes
 json.grow_light spot.grow_light?
 # What the spot actually provides, grow light included. This is the number

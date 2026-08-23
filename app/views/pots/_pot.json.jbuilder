@@ -1,8 +1,9 @@
 json.extract! pot, :id, :slug, :name, :medium, :dry_below, :wet_above,
               :water_interval_days, :fertilize_interval_days, :check_interval_days,
-              :position, :potted_on, :notes, :ha_tag_id
+              :potted_on, :notes, :ha_tag_id
 
 json.aliases pot.voice_aliases
+json.prompt pot.probe_prompt
 
 json.spot do
   json.id pot.spot_id
@@ -51,3 +52,4 @@ json.plants pot.plants do |plant|
 end
 
 json.url pot_url(pot, format: :json)
+json.record_reading_url pot_moisture_readings_url(pot, format: :json)

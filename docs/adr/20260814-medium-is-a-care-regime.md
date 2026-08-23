@@ -40,7 +40,7 @@ history, not inputs to a decision.
 
 - The app can hold both kinds of pot honestly, and the UI says out loud why a semi-hydro
   pot's thresholds are not in charge.
-- `GET /pots/walk.json` carries `medium` and a ready-made `prompt`, so a voice assistant
+- `GET /pots.json` carries `medium` and a ready-made `prompt`, so a voice assistant
   never needs to know this distinction exists.
 - If a third regime appears (pure hydroponics, passive wicking), it is a new enum value plus
   its own branches — the shape already accommodates it.

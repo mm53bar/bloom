@@ -23,7 +23,7 @@
 
     <div>
       <%= form.label :pot_id, "Pot", class: "block text-sm font-medium text-stone-700" %>
-      <%= form.collection_select :pot_id, Pot.in_walk_order.includes(spot: :area), :id,
+      <%= form.collection_select :pot_id, Pot.ordered.includes(spot: :area), :id,
             ->(pot) { "#{pot.name} (#{pot.spot.full_name})" }, {},
             class: "mt-1 w-full rounded-md border border-stone-300 px-3 py-2" %>
       <p class="mt-1 text-xs text-stone-500">
