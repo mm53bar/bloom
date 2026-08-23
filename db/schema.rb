@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_23_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_23_170000) do
   create_table "areas", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ha_area"
@@ -64,6 +64,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_23_120000) do
     t.datetime "created_at", null: false
     t.integer "dry_below", default: 20, null: false
     t.integer "fertilize_interval_days"
+    t.string "ha_tag_id"
     t.string "medium", default: "soil", null: false
     t.string "name", null: false
     t.text "notes"
@@ -75,6 +76,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_23_120000) do
     t.json "voice_aliases", default: [], null: false
     t.integer "water_interval_days"
     t.integer "wet_above", default: 100, null: false
+    t.index ["ha_tag_id"], name: "index_pots_on_ha_tag_id", unique: true
     t.index ["slug"], name: "index_pots_on_slug", unique: true
     t.index ["spot_id", "position"], name: "index_pots_on_spot_id_and_position"
     t.index ["spot_id"], name: "index_pots_on_spot_id"

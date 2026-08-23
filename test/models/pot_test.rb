@@ -200,6 +200,23 @@ class PotTest < ActiveSupport::TestCase
     assert_not @fern.valid?
   end
 
+  test "two pots can both leave the NFC tag blank" do
+    @fern.ha_tag_id = ""
+    other = pots(:succulent_bowl)
+    other.ha_tag_id = ""
+
+    assert @fern.valid?
+    assert other.valid?
+  end
+
+  test "two pots cannot share the same NFC tag" do
+    @fern.update!(ha_tag_id: "abc123")
+    other = pots(:succulent_bowl)
+    other.ha_tag_id = "abc123"
+
+    assert_not other.valid?
+  end
+
   # --- naming ------------------------------------------------------------------
 
   test "a name unique across the house needs no qualifier" do

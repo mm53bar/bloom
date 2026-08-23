@@ -22,6 +22,16 @@ class ApiTest < ActionDispatch::IntegrationTest
     assert_equal 30, fern["dry_below"]
     assert_includes fern["plants"], "Boston Fern"
     assert_match %r{/pots/[a-z]+-[a-z]+/moisture_readings\.json\z}, fern["record_reading_url"]
+    assert_nil fern["ha_tag_id"]
+  end
+
+  test "a pot's NFC tag id comes back in the walk, once set" do
+    pots(:fern).update!(ha_tag_id: "abc123")
+
+    get walk_pots_path(format: :json)
+
+    fern = response.parsed_body["pots"].find { |p| p["name"] == "Big Fern" }
+    assert_equal "abc123", fern["ha_tag_id"]
   end
 
   test "the walk speaks about the reservoir for a semi-hydro pot" do

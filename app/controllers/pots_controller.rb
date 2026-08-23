@@ -102,7 +102,7 @@ class PotsController < ApplicationController
     params.expect(pot: [
       :spot_id, :name, :medium, :dry_below, :wet_above,
       :water_interval_days, :fertilize_interval_days, :check_interval_days,
-      :position, :potted_on, :notes, :voice_alias_list, { voice_aliases: [] }
+      :position, :potted_on, :notes, :voice_alias_list, :ha_tag_id, { voice_aliases: [] }
     ])
   end
 end

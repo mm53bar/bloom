@@ -170,6 +170,42 @@ against the walk list rather than hardcoding names:
 If `match` is empty, say so rather than guessing — an honest "I don't know that one" beats
 watering the wrong plant.
 
+## 6. Identifying a pot from an NFC tag scan
+
+Each pot has an optional `ha_tag_id` — the ID Home Assistant assigns when you register a tag
+under **Settings → Automations & Scenes → Tags**, pasted into that pot's edit form in Bloom.
+It's `nil` until a physical tag has actually been linked to that pot.
+
+A tag scan carries that ID as `trigger.event.data.tag_id`. Match it against the walk list the
+same way a spoken plant name is matched in the section above — no separate Bloom endpoint
+needed:
+
+```yaml
+triggers:
+  - trigger: tag
+actions:
+  - variables:
+      pot: >
+        {{ (state_attr('sensor.bloom_walk', 'pots') | default([]))
+           | selectattr('ha_tag_id', 'equalto', trigger.event.data.tag_id)
+           | list | first }}
+
+  - if:
+      - condition: template
+        value_template: "{{ pot is none }}"
+    then:
+      - stop: "Scanned tag isn't linked to a pot in Bloom"
+
+  - action: rest_command.bloom_record_reading
+    data:
+      pot_id: "{{ pot.slug }}"
+      value: "{{ states('sensor.soil_moisture_tool_soil_moisture') | float(0) }}"
+```
+
+`pot_id` here is a slug (`humble-pyramid`), not a number — `bloom_record_reading`'s URL
+template just interpolates whatever string it's given, so this works unchanged from the
+`rest_command` defined in section 2.
+
 ## Why the data lives in Bloom
 
 Keeping the plant list in Bloom rather than in the automation means adding a plant is one

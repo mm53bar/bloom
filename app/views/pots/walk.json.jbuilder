@@ -5,7 +5,7 @@ json.generated_at Time.current
 json.pot_count @pots.size
 
 json.pots @pots do |pot|
-  json.extract! pot, :id, :slug, :name, :medium, :dry_below, :wet_above
+  json.extract! pot, :id, :slug, :name, :medium, :dry_below, :wet_above, :ha_tag_id
   json.aliases pot.voice_aliases
   json.area pot.area.name
   json.spot pot.spot.full_name

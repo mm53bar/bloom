@@ -36,6 +36,7 @@ class Pot < ApplicationRecord
 
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
+  validates :ha_tag_id, uniqueness: true, allow_nil: true
   validates :medium, inclusion: { in: MEDIUMS }
   validates :dry_below, :wet_above, numericality: { in: 0..100 }
   validates :check_interval_days, numericality: { greater_than: 0 }
@@ -54,6 +55,10 @@ class Pot < ApplicationRecord
   normalizes :voice_aliases, with: ->(list) {
     Array(list).map { |name| name.to_s.strip }.reject(&:blank?).uniq
   }
+
+  # A blank form field submits "", not nil — without this every pot with the
+  # field left empty would collide on the uniqueness validation.
+  normalizes :ha_tag_id, with: ->(id) { id.to_s.strip.presence }
 
   # Light and grouping both hang off the spot; nothing reads them from here.
   delegate :area, to: :spot
