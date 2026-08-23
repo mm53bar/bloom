@@ -9,6 +9,9 @@
       <% end %>
     </p>
     <h1 class="mt-1 text-2xl font-semibold tracking-tight text-stone-900"><%= @pot.name %></h1>
+    <p class="mt-1 font-mono text-xs text-stone-400" title="This pot's permanent identifier — use it for QR/NFC labels.">
+      <%= @pot.slug %>
+    </p>
     <p class="mt-2 flex flex-wrap items-center gap-2 text-sm text-stone-500">
       <%= status_badge @pot.status %>
       <%= condition_badge @pot.light_severity %>
