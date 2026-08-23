@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_17_200000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_23_120000) do
   create_table "areas", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ha_area"
@@ -69,11 +69,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_17_200000) do
     t.text "notes"
     t.integer "position", default: 0, null: false
     t.date "potted_on"
+    t.string "slug", null: false
     t.integer "spot_id", null: false
     t.datetime "updated_at", null: false
     t.json "voice_aliases", default: [], null: false
     t.integer "water_interval_days"
     t.integer "wet_above", default: 100, null: false
+    t.index ["slug"], name: "index_pots_on_slug", unique: true
     t.index ["spot_id", "position"], name: "index_pots_on_spot_id_and_position"
     t.index ["spot_id"], name: "index_pots_on_spot_id"
   end

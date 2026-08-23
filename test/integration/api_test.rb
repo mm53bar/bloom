@@ -21,7 +21,7 @@ class ApiTest < ActionDispatch::IntegrationTest
     assert_equal [ "the big fern", "sunroom fern" ], fern["aliases"]
     assert_equal 30, fern["dry_below"]
     assert_includes fern["plants"], "Boston Fern"
-    assert_match %r{/pots/\d+/moisture_readings\.json\z}, fern["record_reading_url"]
+    assert_match %r{/pots/[a-z]+-[a-z]+/moisture_readings\.json\z}, fern["record_reading_url"]
   end
 
   test "the walk speaks about the reservoir for a semi-hydro pot" do

@@ -3,6 +3,7 @@
 fern:
   spot: sunroom_sill
   name: Big Fern
+  slug: copper-anchor
   voice_aliases: [ "the big fern", "sunroom fern" ]
   medium: soil
   dry_below: 30
@@ -17,6 +18,7 @@ fern:
 succulent_bowl:
   spot: sunroom_sill
   name: Succulent Bowl
+  slug: elegant-vessel
   voice_aliases: [ "the succulents" ]
   medium: soil
   dry_below: 15
@@ -29,6 +31,7 @@ succulent_bowl:
 pothos:
   spot: landing_shelf
   name: Clay Ball Pothos
+  slug: silent-ladder
   medium: semi_hydro
   dry_below: 20
   wet_above: 100
@@ -42,6 +45,7 @@ pothos:
 orphan:
   spot: cellar_bench
   name: Forgotten Pot
+  slug: hollow-drift
   medium: soil
   dry_below: 25
   wet_above: 90

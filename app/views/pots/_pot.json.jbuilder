@@ -1,4 +1,4 @@
-json.extract! pot, :id, :name, :medium, :dry_below, :wet_above,
+json.extract! pot, :id, :slug, :name, :medium, :dry_below, :wet_above,
               :water_interval_days, :fertilize_interval_days, :check_interval_days,
               :position, :potted_on, :notes
 

@@ -35,7 +35,7 @@ class CareEventsController < ApplicationController
   private
 
   def set_pot
-    @pot = Pot.with_care_data.find(params[:pot_id])
+    @pot = Pot.with_care_data.find_by!(slug: params[:pot_id])
   end
 
   def event_params

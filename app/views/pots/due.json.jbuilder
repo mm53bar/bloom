@@ -11,7 +11,7 @@ end
   needs_check: @needs_check, needs_fertilizer: @needs_fertilizer }.each do |key, pots|
   json.set! key do
     json.array! pots do |pot|
-      json.extract! pot, :id, :name
+      json.extract! pot, :id, :slug, :name
       json.display_name pot.display_name
       json.area pot.area.name
       json.spot pot.spot.full_name

@@ -88,7 +88,7 @@ class PotsController < ApplicationController
   end
 
   def set_pot
-    @pot = Pot.with_care_data.find(params[:id])
+    @pot = Pot.with_care_data.find_by!(slug: params[:id])
   end
 
   def render_invalid(template)

@@ -6,6 +6,23 @@ class Pot < ApplicationRecord
   # rather than on a calendar. Every branch on `medium` below is one of those.
   MEDIUMS = %w[ soil semi_hydro ].freeze
 
+  # A generated identifier, not a description: neither list borrows from plant
+  # vocabulary, so a slug never reads as a claim about what's actually potted.
+  # Both are sourced entirely from the BIP39 English wordlist — common, short,
+  # and chosen for unique 4-letter prefixes so a slug survives being misheard
+  # or half-typed. See docs/adr/20260823-pot-slug-identifiers.md.
+  ADJECTIVES = %w[
+    copper velvet brisk hollow humble ancient arctic eternal digital happy
+    heavy lazy lonely lucky magic oval pretty royal rural shy
+    silent silly tiny busy casual curious dynamic elegant electric acoustic
+  ].freeze
+
+  NOUNS = %w[
+    harbor canyon ridge valley hill island coast cliff mountain drift
+    anchor ladder barrel hammer wagon wheel bridge tower castle cabin
+    key basket marble crystal lamp mirror pyramid vessel pipe tank
+  ].freeze
+
   # Northern hemisphere. Feeding a dormant plant in midwinter builds up salts
   # instead of growth, so the fertilizer schedule sleeps outside these months.
   GROWING_SEASON_MONTHS = (3..9).freeze
@@ -15,7 +32,10 @@ class Pot < ApplicationRecord
   has_many :care_events, -> { order(occurred_on: :desc, id: :desc) }, dependent: :destroy
   has_many :moisture_readings, -> { order(read_at: :desc) }, dependent: :destroy
 
+  before_validation :assign_slug, on: :create
+
   validates :name, presence: true
+  validates :slug, presence: true, uniqueness: true
   validates :medium, inclusion: { in: MEDIUMS }
   validates :dry_below, :wet_above, numericality: { in: 0..100 }
   validates :check_interval_days, numericality: { greater_than: 0 }
@@ -40,6 +60,11 @@ class Pot < ApplicationRecord
 
   def soil? = medium == "soil"
   def semi_hydro? = medium == "semi_hydro"
+
+  # The slug, not the database id, is this pot's public identifier — stable
+  # across the delete-and-recreate a rename or a data reload can do, which a
+  # printed QR/NFC label survives and a numeric id does not.
+  def to_param = slug
 
   def latest_reading = moisture_readings.first
 
@@ -197,6 +222,17 @@ class Pot < ApplicationRecord
   end
 
   private
+
+  def assign_slug
+    self.slug ||= generate_unique_slug
+  end
+
+  def generate_unique_slug
+    loop do
+      candidate = "#{ADJECTIVES.sample}-#{NOUNS.sample}"
+      break candidate unless Pot.exists?(slug: candidate)
+    end
+  end
 
   # Watering has a sensor behind it, so an empty history means "we don't know" —
   # and the honest response to not knowing is to go and measure, which
