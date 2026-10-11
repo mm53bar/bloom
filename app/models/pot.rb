@@ -48,7 +48,7 @@ class Pot < ApplicationRecord
     joins(spot: :area).order("areas.name", "spots.name", :name)
   }
   scope :with_care_data, -> {
-    includes(:plants, :care_events, :moisture_readings, spot: :area)
+    preload(:plants, :care_events, :moisture_readings, spot: :area)
   }
 
   normalizes :voice_aliases, with: ->(list) {

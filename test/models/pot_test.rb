@@ -133,6 +133,18 @@ class PotTest < ActiveSupport::TestCase
     assert_not @fern.reload.needs_check?
   end
 
+  test "the sorted roster still sees the newest reading and watering" do
+    read(@fern, 38, at: 30.days.ago)
+    read(@fern, 8, at: 1.hour.ago)
+    water(@fern, on: 20.days.ago)
+    water(@fern, on: 2.days.ago)
+
+    fern = Pot.with_care_data.ordered.find { |pot| pot == @fern }
+
+    assert_equal 8, fern.latest_reading.value
+    assert_equal 2.days.ago.to_date, fern.last_watered_on
+  end
+
   # --- fertilizer sleeps in winter -----------------------------------------
 
   test "fertilizer is due in season when the pot has never been fed" do
