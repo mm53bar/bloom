@@ -32,3 +32,8 @@ services:
       TZ: UTC
       # Rails session/cookie signing key (required). Generate with: openssl rand -hex 64
       SECRET_KEY_BASE: replace-with-64-byte-hex
+      # Optional: lets the pot page fill a reading from the probe via Home
+      # Assistant (docs/home-assistant.md §6). Leave unset to hide the button.
+      # HA_URL: http://homeassistant.example:8123
+      # HA_TOKEN: a-long-lived-access-token
+      # HA_PROBE_ENTITY: sensor.your_soil_probe_moisture

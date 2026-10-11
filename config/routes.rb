@@ -32,4 +32,7 @@ Rails.application.routes.draw do
     resources :moisture_readings, only: [ :index, :create ]
     resources :care_events, only: [ :index, :create ]
   end
+
+  # The roving probe's current value, read through Home Assistant.
+  resource :probe, only: :show, defaults: { format: :json }
 end

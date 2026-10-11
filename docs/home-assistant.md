@@ -163,6 +163,25 @@ Tapping a tag tells Bloom exactly which pot without anyone needing to say a name
 prescribed order — the whole reason a plain pot list, not a sequenced walk, is enough to drive
 this.
 
+## 6. Reading the probe from the pot page
+
+The other direction: Bloom asks HA for the probe's current value, so someone recording a
+reading by hand on a pot's page can press **Get from HA** instead of reading the number off
+the HA app and typing it in. It fills the box and says how long ago the probe last reported;
+the person still presses Record. Readings filled this way are recorded with source `zigbee`.
+
+The button only appears when all three of these are set in Bloom's environment:
+
+```yaml
+# compose.yaml, under services.bloom.environment
+HA_URL: http://homeassistant.example:8123
+HA_TOKEN: a-long-lived-access-token   # Profile → Security → Long-lived access tokens
+HA_PROBE_ENTITY: sensor.your_soil_probe_moisture
+```
+
+A token made just for Bloom can be revoked without touching anything else. Bloom only ever
+reads the one entity named here. See `docs/adr/20261011-read-the-probe-through-home-assistant.md`.
+
 ## Why the data lives in Bloom
 
 Keeping the plant list in Bloom rather than in the automation means adding a plant is one
