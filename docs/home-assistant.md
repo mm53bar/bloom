@@ -147,7 +147,7 @@ actions:
   - action: rest_command.bloom_record_reading
     data:
       pot_id: "{{ pot.slug }}"
-      value: "{{ states('sensor.soil_moisture_tool_soil_moisture') | float(0) }}"
+      value: "{{ states('sensor.your_soil_probe_moisture') | float(0) }}"
     response_variable: reading
 
   # Whole-house rather than a phone notification: more than one person may be
